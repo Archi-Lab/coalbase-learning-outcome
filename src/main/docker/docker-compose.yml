@@ -17,6 +17,10 @@ services:
   learning_outcome_ms:
     environment:
         - TZ=Europe/Berlin
+        - LEARNING_OUTCOME_DB=learning_outcome_db
+        - LEARNING_OUTCOME_DB_NAME=learning_outcome
+        - LEARNING_OUTCOME_DB_USER=learning_outcome
+        - LEARNING_OUTCOME_DB_PW=_CoalbaseLearningOutcomeMS_2017
     depends_on:
       - learning_outcome_db
     networks:
