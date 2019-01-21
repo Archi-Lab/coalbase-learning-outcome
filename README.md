@@ -1,1 +1,0 @@
-# Coalbase Learning Outcome Microservice
