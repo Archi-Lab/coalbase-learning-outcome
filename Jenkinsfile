@@ -1,12 +1,9 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.6.0-jdk-11-slim'
-            args '-v $HOME/.m2:/root/.m2'
-        }
-    }
+
+    agent any
     tools {
         maven "mvn_3_5"
+        jdk "JDK_11"
     }
 
     stages {
