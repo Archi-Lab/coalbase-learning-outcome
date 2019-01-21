@@ -1,8 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'jenkinsci/slave:latest-jdk11'
+        }
+    }
     tools {
         maven "mvn_3_5"
-        jdk "JDK_11"
     }
 
     stages {
@@ -32,7 +35,7 @@ pipeline {
                 sh "mvn -DargLine=\"-Dspring.profiles.active=test\" test"
             }
             post {
-                always	{ junit "target/surefire-reports/*.xml" }
+                always { junit "target/surefire-reports/*.xml" }
                 success {
                     updateGitlabCommitStatus name: "Test", state: "success"
                 }
@@ -49,20 +52,21 @@ pipeline {
                 sh "mvn checkstyle:checkstyle"
                 jacoco()
                 script { scannerHome = tool "SonarQube Scanner"; }
-                withSonarQubeEnv("SonarQube-Server") { sh "${scannerHome}/bin/sonar-scanner" 				 }
+                withSonarQubeEnv("SonarQube-Server") { sh "${scannerHome}/bin/sonar-scanner" }
             }
             post {
                 always {
-                    step([$class: "hudson.plugins.checkstyle.CheckStylePublisher", pattern: "**/target/checkstyle-result.xml", unstableTotalAll:"100"])
+                    step([$class: "hudson.plugins.checkstyle.CheckStylePublisher", pattern: "**/target/checkstyle-result.xml", unstableTotalAll: "100"])
                 }
             }
         }
-        stage("Quality Gate"){
+        stage("Quality Gate") {
             steps {
                 script {
                     timeout(time: 10, unit: "MINUTES") {
                         // Just in case something goes wrong, pipeline will be killed after a timeout
-                        def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+                        def qg = waitForQualityGate()
+                        // Reuse taskId previously collected by withSonarQubeEnv
                         if (qg.status == "WARN") {
                             currentBuild.result = "UNSTABLE"
                         } else {
