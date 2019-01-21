@@ -87,7 +87,7 @@ pipeline {
                 script {
                     docker.withServer('tcp://10.10.10.25:2376', 'CoalbaseVM') {
                         docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
-                            sh 'docker stack deploy --with-registry-auth -c src/main/docker/docker-compose.yml -c src/main/docker/docker-compose.prod.yml learning-outcome'
+                            sh 'docker stack deploy --with-registry-auth -c src/main/docker/docker-compose.yml -c src/main/docker/docker-compose-prod.yml learning-outcome'
                         }
                     }
                 }
