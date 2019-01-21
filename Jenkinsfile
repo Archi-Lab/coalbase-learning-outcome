@@ -12,8 +12,9 @@ pipeline {
                 echo 'Building.. with ID: ${env.BUILD_ID}'
                 updateGitlabCommitStatus name: "Building", state: "running"
                 sh "mvn clean package docker:build -Dmaven.test.skip=true"
-                sh "docker tag de.th-koeln/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
-                sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
+                sh "docker tag de.th-koeln/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
+                sh "docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
+                sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
             }
             post {
                 success {
@@ -30,7 +31,7 @@ pipeline {
         stage('Test') {
             steps {
                 updateGitlabCommitStatus name: "Test", state: "running"
-                sh "mvn -DargLine=\"-Dspring.profiles.active=test\" test"
+                sh "mvn -DargLine=\"-Dspring.profiles.active=local\" test"
             }
             post {
                 always { junit "target/surefire-reports/*.xml" }
@@ -79,7 +80,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 updateGitlabCommitStatus name: "Deploy", state: "running"
-                sh "docker-compose -p coalbase -f src/main/docker/docker-compose.yml -f src/main/docker/docker-compose.prod.yml up -d"
+                script {
+                    docker.withServer('tcp://10.10.10.25:2376', 'CoalbaseVM') {
+                        docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
+                            sh 'docker stack deploy --with-registry-auth -c src/main/docker/docker-compose.yml -c src/main/docker/docker-compose.prod.yml learning-outcome'
+                        }
+                    }
+                }
             }
             post {
                 success {
