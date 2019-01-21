@@ -14,7 +14,11 @@ pipeline {
                 sh "mvn clean package docker:build -Dmaven.test.skip=true"
                 sh "docker tag de.th-koeln/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
                 sh "docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
-                sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
+				script {
+					docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
+						sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
+					}
+				}
             }
             post {
                 success {
