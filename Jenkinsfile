@@ -1,7 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'jenkinsci/slave:3.27-1-jdk11'
+            image 'maven:3.6.0-jdk-11-slim'
+            args '-v $HOME/.m2:/root/.m2'
         }
     }
     tools {
