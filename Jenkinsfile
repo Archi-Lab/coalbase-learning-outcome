@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'jenkinsci/slave:latest-jdk11'
+            image 'jenkinsci/slave:3.27-1-jdk11'
         }
     }
     tools {
