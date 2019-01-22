@@ -7,33 +7,6 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
-            steps {
-                echo 'Building..'
-                updateGitlabCommitStatus name: "Building", state: "running"
-                sh "ls -lisa"
-                sh "pwd"
-                sh "mvn clean package docker:build -Dmaven.test.skip=true"
-                sh "docker tag de.th-koeln/learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
-                sh "docker tag docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
-                script {
-                    docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
-                        sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
-                    }
-                }
-            }
-            post {
-                success {
-                    updateGitlabCommitStatus name: "Building", state: "success"
-                }
-                failure {
-                    updateGitlabCommitStatus name: "Building", state: "failed"
-                }
-                unstable {
-                    updateGitlabCommitStatus name: "Building", state: "success"
-                }
-            }
-        }
         stage('Test') {
             steps {
                 updateGitlabCommitStatus name: "Test", state: "running"
@@ -52,7 +25,7 @@ pipeline {
                 }
             }
         }
-        stage("Code Quality Check") {
+        stage("Quality Check") {
             steps {
                 sh "mvn checkstyle:checkstyle"
                 jacoco()
@@ -80,6 +53,31 @@ pipeline {
                             }
                         }
                     }
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                updateGitlabCommitStatus name: "Building", state: "running"
+
+                sh "mvn clean package -Dmaven.test.skip=true"
+                sh "docker build -f src/docker/Dockerfile -t docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
+                sh "docker tag docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
+                script {
+                    docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
+                        sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
+                    }
+                }
+            }
+            post {
+                success {
+                    updateGitlabCommitStatus name: "Building", state: "success"
+                }
+                failure {
+                    updateGitlabCommitStatus name: "Building", state: "failed"
+                }
+                unstable {
+                    updateGitlabCommitStatus name: "Building", state: "success"
                 }
             }
         }
