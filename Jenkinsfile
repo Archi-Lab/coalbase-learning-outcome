@@ -14,11 +14,11 @@ pipeline {
                 sh "mvn clean package docker:build -Dmaven.test.skip=true"
                 sh "docker tag de.th-koeln/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
                 sh "docker tag docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
-				script {
-					docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
-						sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
-					}
-				}
+                script {
+                    docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
+                        sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
+                    }
+                }
             }
             post {
                 success {
@@ -87,8 +87,7 @@ pipeline {
                 script {
                     docker.withServer('tcp://10.10.10.25:2376', 'CoalbaseVM') {
                         docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
-                            // sh 'docker stack deploy --with-registry-auth -c src/main/docker/docker-compose.yml -c src/main/docker/docker-compose-prod.yml learning-outcome'
-                            sh 'docker stack deploy --with-registry-auth -c src/main/docker/docker-compose-stack.yml learning-outcome'
+                            sh 'docker stack deploy --with-registry-auth -c src/main/docker/docker-compose.yml -c src/main/docker/docker-compose-prod.yml learning-outcome'
                         }
                     }
                 }
