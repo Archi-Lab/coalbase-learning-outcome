@@ -10,7 +10,6 @@ services:
         - POSTGRES_USER=learning_outcome
         - POSTGRES_DB=learning_outcome
         - PGDATA=/var/lib/postgresql/data/pgdata
-        - JAVA_TOOL_OPTIONS=-Xms128m -Xmx256m
     networks:
       - learning_outcome_ms_db
   learning_outcome_ms:
