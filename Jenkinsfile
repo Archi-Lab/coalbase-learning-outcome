@@ -61,7 +61,7 @@ pipeline {
                 updateGitlabCommitStatus name: "Building", state: "running"
 
                 sh "mvn clean package -Dmaven.test.skip=true"
-                sh "docker build -t docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome src/main/docker/Dockerfile"
+                sh "docker build -t docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome -f src/main/docker/Dockerfile ."
                 sh "docker tag docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
                 script {
                     docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
