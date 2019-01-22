@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building.. with ID:' ${env.BUILD_ID}
+                echo 'Building..'
                 updateGitlabCommitStatus name: "Building", state: "running"
                 sh "ls -lisa"
                 sh "pwd"
