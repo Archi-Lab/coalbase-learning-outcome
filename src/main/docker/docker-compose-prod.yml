@@ -1,6 +1,18 @@
-version: '3'
+version: '3.4'
 
 services:
   learning_outcome_ms:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${BUILD_ID}
-    restart: always
+    ports:
+      - "8080:8080"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
