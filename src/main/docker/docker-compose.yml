@@ -11,7 +11,6 @@ services:
         - POSTGRES_DB=learning_outcome
         - PGDATA=/var/lib/postgresql/data/pgdata
         - JAVA_TOOL_OPTIONS=-Xms128m -Xmx256m
-    restart: always
     networks:
       - learning_outcome_ms_db
   learning_outcome_ms:
