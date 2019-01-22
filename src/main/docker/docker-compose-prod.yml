@@ -16,3 +16,12 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    networks:
+      - coalbase_backend
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://graylog:12201"
+networks:
+  coalbase_backend:
+    external: true
