@@ -11,6 +11,8 @@ pipeline {
             steps {
                 echo 'Building.. with ID: ${env.BUILD_ID}'
                 updateGitlabCommitStatus name: "Building", state: "running"
+                ls -lisa
+                pwd
                 sh "mvn clean package docker:build -Dmaven.test.skip=true"
                 sh "docker tag de.th-koeln/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
                 sh "docker tag docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
