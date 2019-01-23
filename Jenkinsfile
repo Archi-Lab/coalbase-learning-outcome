@@ -107,7 +107,7 @@ pipeline {
     }
     post {
         always {
-            discordSend description: 'Jenkins Pipeline Build', footer: 'CoalBase-Infrastructure', link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: 'https://discordapp.com/api/webhooks/537263382349217793/zfgtV8LacnvfZNWbM3BEVEx8_Pevd8FFpf2Ozdo6SE_GjvQ1apFvtC14SkFGZbR1djh-'
+            discordSend description: 'Jenkins Pipeline Build', footer: 'CoalBase-Learning-Outcome', link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: 'https://discordapp.com/api/webhooks/537263382349217793/zfgtV8LacnvfZNWbM3BEVEx8_Pevd8FFpf2Ozdo6SE_GjvQ1apFvtC14SkFGZbR1djh-'
         }
     }
 }
