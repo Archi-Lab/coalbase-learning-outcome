@@ -1,10 +1,16 @@
-package de.archilab.coalbase.learningoutcome;
+package de.archilab.coalbase.learningoutcomeservice;
 
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +20,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CoalbaseLearningOutcomeApplicationTests {
+public class CoalbaseLearningOutcomeApplicationTest {
 
   @Autowired
   private MockMvc mvc;
 
   @Autowired
   private LearningOutcomeRepository learningOutcomeRepository;
+
 
   @Test
   public void createLearningOutcome() throws Exception {
@@ -35,13 +45,20 @@ public class CoalbaseLearningOutcomeApplicationTests {
         "{\"competence\" : " + competence + ", \"tools\" : [" + tool0 + ", " + tool1
             + "], \"purpose\" : " + purpose + "}";
 
+
     mvc.perform(post("/learningOutcomes").content(learningOutcomeJson)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(jsonPath("$.competence", is(competence)))
         .andExpect(jsonPath("$.tools[0]", is(tool0)))
         .andExpect(jsonPath("$.tools[1]", is(tool1)))
-        .andExpect(jsonPath("$.purpose", is(purpose)));
-  }
+        .andExpect(jsonPath("$.purpose", is(purpose)))
+        .andExpect(jsonPath("S._links.self", notNullValue()));
 
+    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository.findAll();
+    assertFalse(learningOutcomes.isEmpty());
+
+    LearningOutcome learningOutcome = learningOutcomes.get(0);
+    assertNotNull(learningOutcome);
+  }
 }
 
