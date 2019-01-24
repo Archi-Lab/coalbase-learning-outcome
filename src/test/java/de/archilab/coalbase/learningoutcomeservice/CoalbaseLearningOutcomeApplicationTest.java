@@ -1,7 +1,6 @@
 package de.archilab.coalbase.learningoutcomeservice;
 
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.is;
@@ -10,7 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
+import java.util.Arrays;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,24 +44,34 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   @Test
   public void createLearningOutcome() throws Exception {
-    String competence = "{\"action\" : \"Die Studierenden können Marketingentscheidungen informationsgestützt treffen\", \"taxonomyLevel\" : \"Synthese (Stufe 5)\"}";
-    String tool0 = "{\"value\" : \"das Makro- und Mikroumfeld des relevanten Marktes so wie das eigenen Unternehmen analysieren\"}";
-    String tool1 = "{\"value\" : \"Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen\"}";
-    String purpose = "{\"value\" : \"Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten\"}";
-    String learningOutcomeJson =
-        "{\"competence\" : " + competence + ", \"tools\" : [" + tool0 + ", " + tool1
-            + "], \"purpose\" : " + purpose + "}";
 
+    Competence competence = new Competence(
+        "Die Studierenden können Marketingentscheidungen informationsgestützt treffen",
+        TaxonomyLevel.Synthese);
 
-    mvc.perform(post("/learningOutcomes").content(learningOutcomeJson)
+    Tool tool0 = new Tool(
+        "das Makro- und Mikroumfeld des relevanten Marktes so wie das eigenen Unternehmen analysieren");
+    Tool tool1 = new Tool(
+        "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen");
+    Purpose purpose = new Purpose(
+        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
+
+    LearningOutcome learningOutcomeToPost = new LearningOutcome(competence,
+        Arrays.asList(tool0, tool1), purpose);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String json = objectMapper.writeValueAsString(learningOutcomeToPost);
+
+    mvc.perform(post("/learningOutcomes").content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
-        .andExpect(jsonPath("$.competence", is(competence)))
-        .andExpect(jsonPath("$.tools[0]", is(tool0)))
-        .andExpect(jsonPath("$.tools[1]", is(tool1)))
-        .andExpect(jsonPath("$.purpose", is(purpose)))
+        .andExpect(jsonPath("$.competence", is(objectMapper.writeValueAsString(competence))))
+        .andExpect(jsonPath("$.tools[0]", is(objectMapper.writeValueAsString(tool0))))
+        .andExpect(jsonPath("$.tools[1]", is(objectMapper.writeValueAsString(tool1))))
+        .andExpect(jsonPath("$.purpose", is(objectMapper.writeValueAsString(purpose))))
         .andExpect(jsonPath("S._links.self", notNullValue()));
 
-    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository.findAll();
+    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
+        .findAll();
     assertFalse(learningOutcomes.isEmpty());
 
     LearningOutcome learningOutcome = learningOutcomes.get(0);
