@@ -6,7 +6,6 @@ import javax.persistence.Embeddable;
 
 import de.archilab.coalbase.learningoutcomeservice.core.Identifier;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
