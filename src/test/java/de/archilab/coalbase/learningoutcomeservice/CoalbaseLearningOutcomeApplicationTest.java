@@ -1,11 +1,11 @@
 package de.archilab.coalbase.learningoutcomeservice;
 
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +50,45 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @Test
   public void createLearningOutcome() throws Exception {
 
+    LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String json = objectMapper.writeValueAsString(learningOutcomeToPost);
+
+    mvc.perform(post("/learningOutcomes").content(json)
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
+        .andExpect(
+            jsonPath("$.competence.action", is(learningOutcomeToPost.getCompetence().getAction())))
+        .andExpect(jsonPath("$.competence.taxonomyLevel",
+            is(learningOutcomeToPost.getCompetence().getTaxonomyLevel().name())))
+        .andExpect(
+            jsonPath("$.tools[0].value", is(learningOutcomeToPost.getTools().get(0).getValue())))
+        .andExpect(
+            jsonPath("$.tools[1].value", is(learningOutcomeToPost.getTools().get(1).getValue())))
+        .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPost.getPurpose().getValue())))
+        .andExpect(jsonPath("$._links.self", notNullValue()));
+
+    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
+        .findAll();
+    assertFalse(learningOutcomes.isEmpty());
+    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
+        .findById(learningOutcomes.get(0).getLearningOutcomeIdentifier());
+    assertTrue(optionalLearningOutcome.isPresent());
+    LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
+    assertEquals(savedLearningOutcome.getCompetence(), learningOutcomeToPost.getCompetence());
+    assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPost.getTools().get(0));
+    assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPost.getTools().get(1));
+    assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
+
+  }
+
+  private LearningOutcomeIdentifier createLearningOutcomeToRepo() {
+    final LearningOutcome learningOutcome = buildSampleLearningOutcome();
+    this.learningOutcomeRepository.save(learningOutcome);
+    return learningOutcome.getLearningOutcomeIdentifier();
+  }
+
+  private LearningOutcome buildSampleLearningOutcome() {
     Competence competence = new Competence(
         "Die Studierenden können Marketingentscheidungen informationsgestützt treffen",
         TaxonomyLevel.SYNTHESIS);
@@ -64,33 +103,11 @@ public class CoalbaseLearningOutcomeApplicationTest {
     UUID uuid = UUID.randomUUID();
     LearningOutcomeIdentifier learningOutcomeIdentifier = new LearningOutcomeIdentifier(uuid);
 
-    LearningOutcome learningOutcomeToPost = new LearningOutcome(learningOutcomeIdentifier,
+    return new LearningOutcome(learningOutcomeIdentifier,
         competence,
         Arrays.asList(tool0, tool1), purpose);
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    String json = objectMapper.writeValueAsString(learningOutcomeToPost);
-
-    mvc.perform(post("/learningOutcomes").content(json)
-        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
-        .andExpect(jsonPath("$.competence.action", is(competence.getAction())))
-        .andExpect(jsonPath("$.competence.taxonomyLevel", is(competence.getTaxonomyLevel().name())))
-        .andExpect(jsonPath("$.tools[0].value", is(tool0.getValue())))
-        .andExpect(jsonPath("$.tools[1].value", is(tool1.getValue())))
-        .andExpect(jsonPath("$.purpose.value", is(purpose.getValue())))
-        .andExpect(jsonPath("$._links.self", notNullValue()));
-
-    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
-        .findAll();
-    assertFalse(learningOutcomes.isEmpty());
-    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository.findById(learningOutcomes.get(0).getLearningOutcomeIdentifier());
-    assertTrue(optionalLearningOutcome.isPresent());
-    LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
-    assertEquals(savedLearningOutcome.getCompetence(), competence);
-    assertEquals(savedLearningOutcome.getTools().get(0), tool0);
-    assertEquals(savedLearningOutcome.getTools().get(1), tool1);
-    assertEquals(savedLearningOutcome.getPurpose(), purpose);
-
   }
-}
 
+
+}
