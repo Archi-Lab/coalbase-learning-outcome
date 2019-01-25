@@ -6,11 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.ElementCollection;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
-
-import de.archilab.coalbase.learningoutcomeservice.core.AbstractEntity;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +18,13 @@ import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
-public class LearningOutcome extends AbstractEntity {
+public class LearningOutcome {
+
+  @EmbeddedId
+  LearningOutcomeIdentifier learningOutcomeIdentifier;
 
   @Setter
   private Competence competence;
