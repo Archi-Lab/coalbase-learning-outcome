@@ -6,7 +6,9 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -79,6 +82,28 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPost.getTools().get(0));
     assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPost.getTools().get(1));
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
+
+  }
+
+  @Test
+  public void getLearningOutcomeByUUID() throws Exception {
+    LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
+    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
+        .findById(identifier);
+    assertTrue(optionalLearningOutcome.isPresent());
+    LearningOutcome learningOutcome = optionalLearningOutcome.get();
+
+    String url = "/learningOutcomes/" + identifier.getId().toString();
+
+    mvc.perform(get(url)).andExpect(status().isOk())
+        .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.competence.action", is(learningOutcome.getCompetence().getAction())))
+        .andExpect(jsonPath("$.competence.taxonomyLevel",
+            is(learningOutcome.getCompetence().getTaxonomyLevel().name())))
+        .andExpect(jsonPath("$.tools[0].value", is(learningOutcome.getTools().get(0).getValue())))
+        .andExpect(jsonPath("$.tools[1].value", is(learningOutcome.getTools().get(1).getValue())))
+        .andExpect(jsonPath("$.purpose.value", is(learningOutcome.getPurpose().getValue())))
+        .andExpect(jsonPath("$._links.self", notNullValue()));
 
   }
 
