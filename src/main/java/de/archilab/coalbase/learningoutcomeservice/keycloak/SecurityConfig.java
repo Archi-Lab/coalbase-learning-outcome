@@ -1,4 +1,4 @@
-package de.archilab.coalbase.learningoutcome.keycloak;
+package de.archilab.coalbase.learningoutcomeservice.keycloak;
 
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
@@ -47,7 +47,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception{
     super.configure(httpSecurity);
-    httpSecurity.authorizeRequests().anyRequest().permitAll();
+    httpSecurity.authorizeRequests()
+        .antMatchers("/learningOutcomes/**").permitAll()
+        .anyRequest().authenticated();
   }
 
   @Bean

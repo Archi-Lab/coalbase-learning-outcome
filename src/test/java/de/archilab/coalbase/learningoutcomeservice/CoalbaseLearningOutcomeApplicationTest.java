@@ -6,6 +6,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -58,7 +59,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPost);
 
-    mvc.perform(post("/learningOutcomes").content(json)
+    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPost.getCompetence().getAction())))
@@ -95,7 +96,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     String url = "/learningOutcomes/" + identifier.getId().toString();
 
-    mvc.perform(get(url)).andExpect(status().isOk())
+    mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$.competence.action", is(learningOutcome.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
