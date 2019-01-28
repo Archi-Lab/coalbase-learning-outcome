@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -62,7 +63,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPost);
 
-    mvc.perform(post("/learningOutcomes").content(json)
+    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPost.getCompetence().getAction())))
@@ -97,7 +98,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
     mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getLearningOutcomeIdentifier())
-        .content(json)
+        .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPut.getCompetence().getAction())))
@@ -128,7 +129,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @Test
   public void patchLearningOutcome() throws Exception {
     LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
-    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository.findById(identifier);
+    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
+        .findById(identifier);
 
     assertTrue(optionalLearningOutcome.isPresent());
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
@@ -143,7 +145,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String url = "/learningOutcomes/" + identifier.getId().toString();
 
-    mvc.perform(patch(url).content(objectMapper.writeValueAsString(learningOutcomeToPatch))
+    mvc.perform(patch(url).content(objectMapper.writeValueAsString(learningOutcomeToPatch)).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(200))
         .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPatch.getCompetence().getAction())))
@@ -159,15 +161,17 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @Test
   public void deleteLearningOutcome() throws Exception {
     LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
-    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository.findById(identifier);
+    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
+        .findById(identifier);
     assertTrue(optionalLearningOutcome.isPresent());
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
     assertNotNull(learningOutcome);
 
     String url = "/learningOutcomes/" + identifier.getId().toString();
-    mvc.perform(delete(url)).andExpect(status().isNoContent());
+    mvc.perform(delete(url).with(csrf())).andExpect(status().isNoContent());
 
-    Optional<LearningOutcome> optionalLearningOutcomeDeleted = this.learningOutcomeRepository.findById(identifier);
+    Optional<LearningOutcome> optionalLearningOutcomeDeleted = this.learningOutcomeRepository
+        .findById(identifier);
     assertFalse(optionalLearningOutcomeDeleted.isPresent());
 
   }
@@ -175,7 +179,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @Test
   public void getLearningOutcomeByUUID() throws Exception {
     LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
-    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository.findById(identifier);
+    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
+        .findById(identifier);
 
     assertTrue(optionalLearningOutcome.isPresent());
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
@@ -183,7 +188,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     String url = "/learningOutcomes/" + identifier.getId().toString();
 
-    mvc.perform(get(url)).andExpect(status().isOk())
+    mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$.competence.action", is(learningOutcome.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
@@ -205,7 +210,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     String url = "/learningOutcomes/";
 
-    mvc.perform(get(url)).andExpect(status().isOk())
+    mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$._embedded.learningOutcomes[0].competence.action",
             is(learningOutcomes.get(0).getCompetence().getAction())))
