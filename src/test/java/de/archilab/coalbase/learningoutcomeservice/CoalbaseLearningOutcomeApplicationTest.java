@@ -202,8 +202,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   @Test
   public void getLearningOutcomes() throws Exception {
-    LearningOutcomeIdentifier identifier0 = this.createLearningOutcomeToRepo();
-    LearningOutcomeIdentifier identifier1 = this.createLearningOutcomeToRepo();
+    this.createLearningOutcomeToRepo();
+    this.createLearningOutcomeToRepo();
 
     List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
         .findAll();
