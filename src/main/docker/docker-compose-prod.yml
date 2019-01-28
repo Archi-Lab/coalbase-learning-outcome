@@ -2,6 +2,10 @@ version: '3.4'
 
 services:
   learning_outcome_db:
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
     deploy:
       restart_policy:
         condition: on-failure
@@ -21,3 +25,12 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    networks:
+      - coalbase_backend
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+networks:
+  coalbase_backend:
+    external: true
