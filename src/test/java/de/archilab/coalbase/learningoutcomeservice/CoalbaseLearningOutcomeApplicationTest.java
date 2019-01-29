@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,6 +21,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +55,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   private LearningOutcomeRepository learningOutcomeRepository;
 
   @Test
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void createLearningOutcome() throws Exception {
 
     LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
@@ -83,10 +87,36 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPost.getTools().get(0));
     assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPost.getTools().get(1));
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
-
   }
 
   @Test
+  public void createLearningOutcomeWithoutAuthorizationShouldFail() throws Exception {
+
+    LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String json = objectMapper.writeValueAsString(learningOutcomeToPost);
+
+    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
+  }
+
+  @Test
+  public void deleteLearningOutcomeWithoutAuthorizationShouldFail() throws Exception
+  {
+    mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(401));
+  }
+
+  @Test
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  public void deleteLearningOutcomeWithAuthorization() throws Exception
+  {
+    mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(404));
+  }
+
+  @Test
+  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void getLearningOutcomeByUUID() throws Exception {
     LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
