@@ -1,8 +1,5 @@
 package de.archilab.coalbase.learningoutcomeservice.keycloak;
 
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,11 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Key;
 import java.security.Principal;
-import java.util.Set;
-
-import javax.annotation.security.PermitAll;
 
 
 @RestController

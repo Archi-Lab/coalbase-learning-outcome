@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -187,30 +186,30 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   }
 
-//  @Test
-//  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
-//  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
-//  public void patchLearningOutcomeWithoutAuthorizationShouldFail() throws Exception {
-//    LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
-//    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
-//        .findById(identifier);
-//
-//    assertTrue(optionalLearningOutcome.isPresent());
-//    LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
-//    assertNotNull(learningOutcome);
-//
-//    Competence competence = new Competence("Action", TaxonomyLevel.ANALYSIS);
-//    Tool tool = new Tool("Tool");
-//    Purpose purpose = new Purpose("Purpose");
-//    LearningOutcome learningOutcomeToPatch = new LearningOutcome(identifier, competence,
-//        Arrays.asList(tool), purpose);
-//
-//    ObjectMapper objectMapper = new ObjectMapper();
-//    String url = "/learningOutcomes/" + identifier.getId().toString();
-//
-//    mvc.perform(patch(url).content(objectMapper.writeValueAsString(learningOutcomeToPatch)).with(csrf())
-//        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
-//  }
+/*  @Test
+  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  public void patchLearningOutcomeWithoutAuthorizationShouldFail() throws Exception {
+    LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
+    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
+        .findById(identifier);
+
+    assertTrue(optionalLearningOutcome.isPresent());
+    LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
+    assertNotNull(learningOutcome);
+
+    Competence competence = new Competence("Action", TaxonomyLevel.ANALYSIS);
+    Tool tool = new Tool("Tool");
+    Purpose purpose = new Purpose("Purpose");
+    LearningOutcome learningOutcomeToPatch = new LearningOutcome(identifier, competence,
+        Arrays.asList(tool), purpose);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String url = "/learningOutcomes/" + identifier.getId().toString();
+
+    mvc.perform(patch(url).content(objectMapper.writeValueAsString(learningOutcomeToPatch)).with(csrf())
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
+  }*/
 
   @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
