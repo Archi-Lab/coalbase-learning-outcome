@@ -55,10 +55,19 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception{
     super.configure(httpSecurity);
-    httpSecurity.cors().and()
-        .authorizeRequests().antMatchers(HttpMethod.GET, "/learningOutcomes/*").permitAll().and()
-        .authorizeRequests().antMatchers(HttpMethod.GET, "/learningOutcomes").permitAll().and()
-        .authorizeRequests().antMatchers(HttpMethod.GET, "/helloworld").permitAll()
+    httpSecurity.cors()
+        .and()
+        .csrf().disable() //Possible Security Issue! Take a look into this!
+        .authorizeRequests()
+        .antMatchers("/browser/**").permitAll()
+        .antMatchers("/profile/**").permitAll()
+        .antMatchers("/studyRooms").permitAll()
+        .antMatchers("/studyRooms/**").permitAll()
+        .antMatchers(HttpMethod.GET, "/learningOutcomes/*").permitAll()
+        .antMatchers(HttpMethod.GET, "/learningOutcomes").permitAll()
+        .antMatchers(HttpMethod.GET, "/helloworld").permitAll()
+        .and()
+        .authorizeRequests()
         .anyRequest().authenticated();
   }
 }
