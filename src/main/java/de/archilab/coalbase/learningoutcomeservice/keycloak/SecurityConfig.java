@@ -63,11 +63,25 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .antMatchers("/profile/**").permitAll()
         .antMatchers("/studyRooms").permitAll()
         .antMatchers("/studyRooms/**").permitAll()
-        .antMatchers(HttpMethod.GET, "/learningOutcomes/*").permitAll()
+        //LearningOutcome (Standard endpoints provided by SDR)
+        //ListResource
         .antMatchers(HttpMethod.GET, "/learningOutcomes").permitAll()
-        .antMatchers(HttpMethod.GET, "/helloworld").permitAll()
+        .antMatchers(HttpMethod.HEAD, "/learningOutcomes").permitAll()
+        .antMatchers(HttpMethod.POST, "/learningOutcomes").hasAnyRole("coalbase_professor", "coalbase_admin")
+        //ItemResource
+        .antMatchers(HttpMethod.GET, "/learningOutcomes/*").permitAll()
+        .antMatchers(HttpMethod.HEAD, "/learningOutcomes/*").permitAll()
+        .antMatchers(HttpMethod.PUT, "/learningOutcomes/*").hasAnyRole("coalbase_professor", "coalbase_admin")
+        .antMatchers(HttpMethod.PATCH, "/learningOutcomes/*").hasAnyRole("coalbase_professor", "coalbase_admin")
+        .antMatchers(HttpMethod.DELETE, "/learningOutcomes/*").hasAnyRole("coalbase_professor", "coalbase_admin")
+        //AssociationResource
+        .antMatchers(HttpMethod.GET, "/learningOutcomes/*/**").permitAll()
+        .antMatchers(HttpMethod.PUT, "/learningOutcomes/*/**").hasAnyRole("coalbase_professor", "coalbase_admin")
+        .antMatchers(HttpMethod.POST, "/learningOutcomes/*/**").hasAnyRole("coalbase_professor", "coalbase_admin")
+        .antMatchers(HttpMethod.DELETE, "/learningOutcomes/*/**").hasAnyRole("coalbase_professor", "coalbase_admin")
+
         .and()
         .authorizeRequests()
-        .anyRequest().authenticated();
+        .anyRequest().hasRole("coalbase_admin");
   }
 }

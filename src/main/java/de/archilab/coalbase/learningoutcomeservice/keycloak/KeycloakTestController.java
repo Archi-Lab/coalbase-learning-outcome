@@ -22,7 +22,6 @@ public class KeycloakTestController {
   }
 
   @RequestMapping(value="authorizedhelloworld",method = RequestMethod.GET)
-  @PreAuthorize("hasRole('coalbase_user')")
   public String getAuthorizedMyTestResource(Principal principal){
     return "Authorized Hello " + principal.getName();
   }

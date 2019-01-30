@@ -57,6 +57,23 @@ public class CoalbaseLearningOutcomeApplicationTest {
   private LearningOutcomeRepository learningOutcomeRepository;
 
   @Test
+  public void notWhiteListedURLWithoutAuthenticationShouldFailWith401() throws Exception{
+    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(401));
+  }
+
+  @Test
+  @WithMockUser(username = "testAdmin", roles = {"coalbase_admin"})
+  public void notWhiteListedURLWithAdminRoleShouldSucceedWith200() throws Exception{
+    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
+  }
+
+  @Test
+  @WithMockUser(username = "testuser", roles = ("coalbase_user"))
+  public void getAuthorizedHelloWorldWithNotSufficientRolesShouldFail403() throws Exception{
+    mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
+  }
+
+  @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void createLearningOutcome() throws Exception {
 
@@ -92,7 +109,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   @Test
-  public void createLearningOutcomeWithoutAuthorizationShouldFail() throws Exception {
+  public void createLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
 
     LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
 
@@ -141,7 +158,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   @Test
-  public void putLearningOutcomeWithoutAuthorizationShouldFail() throws Exception {
+  public void putLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
     LearningOutcome learningOutcomeToPut = buildSampleLearningOutcome();
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -151,7 +168,6 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
   }
-
 
   @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
@@ -231,7 +247,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   @Test
-  public void deleteLearningOutcomeWithoutAuthorizationShouldFail() throws Exception {
+  public void deleteLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
     mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(401));
   }
 
