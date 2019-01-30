@@ -51,7 +51,13 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     return new NullAuthenticatedSessionStrategy();
   }
 
+  private static final String ROLE_STUDENT = "coalbase_student";
+  private static final String ROLE_PROFESSOR = "coalbase_professor";
+  private static final String ROLE_ADMIN = "coalbase_admin";
 
+  private static final String LO_LIST_RESOURCE = "/learningOutcomes";
+  private static final String LO_ITEM_RESOURCE = "/learningOutcomes/*";
+  private static final String LO_ASSOCIATION_RESOURCE = "/learningOutcomes/*/**";
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception{
     super.configure(httpSecurity);
@@ -65,23 +71,23 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .antMatchers("/studyRooms/**").permitAll()
         //LearningOutcome (Standard endpoints provided by SDR)
         //ListResource
-        .antMatchers(HttpMethod.GET, "/learningOutcomes").permitAll()
-        .antMatchers(HttpMethod.HEAD, "/learningOutcomes").permitAll()
-        .antMatchers(HttpMethod.POST, "/learningOutcomes").hasAnyRole("coalbase_professor", "coalbase_admin")
+        .antMatchers(HttpMethod.GET, LO_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, LO_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.POST, LO_LIST_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
         //ItemResource
-        .antMatchers(HttpMethod.GET, "/learningOutcomes/*").permitAll()
-        .antMatchers(HttpMethod.HEAD, "/learningOutcomes/*").permitAll()
-        .antMatchers(HttpMethod.PUT, "/learningOutcomes/*").hasAnyRole("coalbase_professor", "coalbase_admin")
-        .antMatchers(HttpMethod.PATCH, "/learningOutcomes/*").hasAnyRole("coalbase_professor", "coalbase_admin")
-        .antMatchers(HttpMethod.DELETE, "/learningOutcomes/*").hasAnyRole("coalbase_professor", "coalbase_admin")
+        .antMatchers(HttpMethod.GET, LO_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, LO_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.PATCH, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
         //AssociationResource
-        .antMatchers(HttpMethod.GET, "/learningOutcomes/*/**").permitAll()
-        .antMatchers(HttpMethod.PUT, "/learningOutcomes/*/**").hasAnyRole("coalbase_professor", "coalbase_admin")
-        .antMatchers(HttpMethod.POST, "/learningOutcomes/*/**").hasAnyRole("coalbase_professor", "coalbase_admin")
-        .antMatchers(HttpMethod.DELETE, "/learningOutcomes/*/**").hasAnyRole("coalbase_professor", "coalbase_admin")
+        .antMatchers(HttpMethod.GET, LO_ASSOCIATION_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.POST, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
 
         .and()
         .authorizeRequests()
-        .anyRequest().hasRole("coalbase_admin");
+        .anyRequest().hasRole(ROLE_ADMIN);
   }
 }
