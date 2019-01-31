@@ -54,6 +54,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
@@ -153,7 +155,6 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPost.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
     List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
@@ -166,6 +167,13 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPost.getTools().get(1));
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
 
+    /*Test kafka message */
+    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
+        .readValue(record.value(), LearningOutcomeDomainEvent.class);
+    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.CREATED.name());
+    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
+        learningOutcomes.get(0).getId());
   }
 
   @Test
@@ -215,6 +223,14 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPut.getTools().get(0));
     assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPut.getTools().get(1));
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPut.getPurpose());
+
+    /*Test kafka message */
+    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
+        .readValue(record.value(), LearningOutcomeDomainEvent.class);
+    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.CREATED.name());
+    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
+        savedLearningOutcome.getId());
   }
 
   @Test
@@ -269,6 +285,13 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$.purpose.value", is(learningOutcome.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
+    /*Test kafka message */
+    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
+        .readValue(record.value(), LearningOutcomeDomainEvent.class);
+    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.UPDATED.name());
+    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
+        learningOutcome.getId());
   }
 
 /*  @Test
@@ -313,6 +336,13 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .findById(identifier);
     assertFalse(optionalLearningOutcomeDeleted.isPresent());
 
+    /*Test kafka message */
+    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    LearningOutcomeDomainEvent learningOutcomeDomainEvent = new ObjectMapper()
+        .readValue(record.value(), LearningOutcomeDomainEvent.class);
+    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.DELETED.name());
+    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
+        learningOutcome.getId());
   }
 
   @Test
