@@ -73,8 +73,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     httpSecurity
         .cors()
         .and()
-        // Possible Security Issue! Take a look into this!
+        // Possible security issue! Take a look into this!
         .csrf().disable()
+        // Needed for H2 console. Possible security issue!
+        .headers().frameOptions().sameOrigin()
+        .and()
         .authorizeRequests()
 
         .antMatchers("/browser/**")
@@ -166,7 +169,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .hasAnyRole(SecurityConfig.ROLE_ADMIN)
 
         // H2-Console
-        .antMatchers(HttpMethod.GET, SecurityConfig.H2_CONSOLE, SecurityConfig.H2_CONSOLE_SUB)
+        .antMatchers(SecurityConfig.H2_CONSOLE, SecurityConfig.H2_CONSOLE_SUB)
         .permitAll()
 
         // Fallback
