@@ -58,6 +58,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   private static final String LO_LIST_RESOURCE = "/learningOutcomes";
   private static final String LO_ITEM_RESOURCE = "/learningOutcomes/*";
   private static final String LO_ASSOCIATION_RESOURCE = "/learningOutcomes/*/**";
+  
+  private static final String SEMESTER_LIST_RESOURCE = "/semesters";
+  private static final String SEMESTER_ITEM_RESOURCE = "/semesters/*";
+  private static final String SEMESTER_ASSOCIATION_RESOURCE = "/semesters/*/**";
+  
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception{
     super.configure(httpSecurity);
@@ -85,6 +90,23 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.PUT, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
         .antMatchers(HttpMethod.POST, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
         .antMatchers(HttpMethod.DELETE, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        
+        //Semester
+        //ListResource
+        .antMatchers(HttpMethod.GET, SEMESTER_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, SEMESTER_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.POST, SEMESTER_LIST_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        //ItemResource
+        .antMatchers(HttpMethod.GET, SEMESTER_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, SEMESTER_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.PATCH, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        //AssociationResource
+        .antMatchers(HttpMethod.GET, SEMESTER_ASSOCIATION_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.POST, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
 
         .and()
         .authorizeRequests()
