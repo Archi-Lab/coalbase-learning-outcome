@@ -10,7 +10,7 @@ public class EntityWithUniqueIdConverter implements BackendIdConverter {
 
   @Override
   public Serializable fromRequestId(String id, Class<?> aClass) {
-      return new UniqueId(id);
+    return new UniqueId(id);
   }
 
   @Override

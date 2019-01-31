@@ -68,7 +68,6 @@ public class KafkaMessageProducerTest {
 
       @Override
       public void onMessage(ConsumerRecord<String, String> record) {
-        System.out.println(record);
         records.add(record);
       }
 

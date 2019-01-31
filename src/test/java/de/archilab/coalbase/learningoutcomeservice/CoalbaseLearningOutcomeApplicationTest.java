@@ -67,27 +67,23 @@ import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
 @Transactional
 public class CoalbaseLearningOutcomeApplicationTest {
 
+  private static final String TOPIC = "learning-outcome";
+  @ClassRule
+  public final static EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
+      false, TOPIC);
+  private static BlockingQueue<ConsumerRecord<String, String>> records;
   @Autowired
   private MockMvc mvc;
-
   @Autowired
   private LearningOutcomeRepository learningOutcomeRepository;
-
-  private static final String TOPIC = "learning-outcome";
-
-  private static BlockingQueue<ConsumerRecord<String, String>> records;
-
-  @ClassRule
-  public static EmbeddedKafkaRule broker = new EmbeddedKafkaRule(1,
-      false, TOPIC);
 
   @BeforeClass
   public static void setup() {
     System.setProperty("spring.kafka.bootstrap-servers",
-        broker.getEmbeddedKafka().getBrokersAsString());
+        BROKER.getEmbeddedKafka().getBrokersAsString());
 
     Map<String, Object> consumerProps = KafkaTestUtils
-        .consumerProps("testT", "false", broker.getEmbeddedKafka());
+        .consumerProps("testT", "false", BROKER.getEmbeddedKafka());
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
@@ -104,7 +100,6 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
       @Override
       public void onMessage(ConsumerRecord<String, String> record) {
-        System.out.println(record);
         records.add(record);
       }
 
@@ -112,7 +107,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     container.setBeanName("templateTests");
     container.start();
     ContainerTestUtils
-        .waitForAssignment(container, broker.getEmbeddedKafka().getPartitionsPerTopic());
+        .waitForAssignment(container, BROKER.getEmbeddedKafka().getPartitionsPerTopic());
 
   }
 
@@ -171,7 +166,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.CREATED.name());
+    assertEquals(learningOutcomeDomainEvent.getEventType(),
+        LearningOutcomeEventType.CREATED.name());
     assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
         learningOutcomes.get(0).getId());
   }
@@ -228,7 +224,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.CREATED.name());
+    assertEquals(learningOutcomeDomainEvent.getEventType(),
+        LearningOutcomeEventType.CREATED.name());
     assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
         savedLearningOutcome.getId());
   }
@@ -289,7 +286,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.UPDATED.name());
+    assertEquals(learningOutcomeDomainEvent.getEventType(),
+        LearningOutcomeEventType.UPDATED.name());
     assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
         learningOutcome.getId());
   }
@@ -340,7 +338,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = new ObjectMapper()
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(), LearningOutcomeEventType.DELETED.name());
+    assertEquals(learningOutcomeDomainEvent.getEventType(),
+        LearningOutcomeEventType.DELETED.name());
     assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
         learningOutcome.getId());
   }

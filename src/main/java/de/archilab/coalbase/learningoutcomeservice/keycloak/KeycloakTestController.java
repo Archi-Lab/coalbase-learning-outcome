@@ -13,15 +13,16 @@ import java.security.Principal;
 @CrossOrigin("*")
 public class KeycloakTestController {
 
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(KeycloakTestController.class);
+  private static final org.slf4j.Logger LOGGER = LoggerFactory
+      .getLogger(KeycloakTestController.class);
 
-  @RequestMapping(value="helloworld",method = RequestMethod.GET)
-  public String getMyTestResource(){
+  @RequestMapping(value = "helloworld", method = RequestMethod.GET)
+  public String getMyTestResource() {
     return "Hello World";
   }
 
-  @RequestMapping(value="authorizedhelloworld",method = RequestMethod.GET)
-  public String getAuthorizedMyTestResource(Principal principal){
+  @RequestMapping(value = "authorizedhelloworld", method = RequestMethod.GET)
+  public String getAuthorizedMyTestResource(Principal principal) {
     return "Authorized Hello " + principal.getName();
   }
 }

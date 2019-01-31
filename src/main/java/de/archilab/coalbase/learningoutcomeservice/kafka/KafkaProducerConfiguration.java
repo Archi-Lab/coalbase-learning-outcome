@@ -17,11 +17,11 @@ import java.util.Map;
 @Configuration
 public class KafkaProducerConfiguration {
 
+  private static final Logger log = LoggerFactory.getLogger(KafkaProducerConfiguration.class);
   private final String servers;
 
-  private static final Logger log = LoggerFactory.getLogger(KafkaProducerConfiguration.class);
-
-  public KafkaProducerConfiguration(@Value("${spring.kafka.bootstrap-servers}") final String servers) {
+  public KafkaProducerConfiguration(
+      @Value("${spring.kafka.bootstrap-servers}") final String servers) {
     this.servers = servers;
     log.info(servers);
   }

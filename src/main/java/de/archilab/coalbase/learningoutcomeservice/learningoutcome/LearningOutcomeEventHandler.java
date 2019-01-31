@@ -28,21 +28,28 @@ public class LearningOutcomeEventHandler {
   }
 
   @HandleAfterCreate
-  public void handleLearningOutcomeCreate(LearningOutcome learningOutcome) throws JsonProcessingException {
-    this.kafkaMessageProducer.send(this.topic, buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.CREATED));
+  public void handleLearningOutcomeCreate(LearningOutcome learningOutcome)
+      throws JsonProcessingException {
+    this.kafkaMessageProducer.send(this.topic,
+        buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.CREATED));
   }
 
   @HandleAfterSave
-  public void handleLearningOutcomeSave(LearningOutcome learningOutcome) throws JsonProcessingException {
-    this.kafkaMessageProducer.send(this.topic, buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.UPDATED));
+  public void handleLearningOutcomeSave(LearningOutcome learningOutcome)
+      throws JsonProcessingException {
+    this.kafkaMessageProducer.send(this.topic,
+        buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.UPDATED));
   }
 
   @HandleAfterDelete
-  public void handleLearningOutcomeDelete(LearningOutcome learningOutcome) throws JsonProcessingException {
-    this.kafkaMessageProducer.send(this.topic, buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.DELETED));
+  public void handleLearningOutcomeDelete(LearningOutcome learningOutcome)
+      throws JsonProcessingException {
+    this.kafkaMessageProducer.send(this.topic,
+        buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.DELETED));
   }
 
-  private LearningOutcomeDomainEvent buildLearningOutcomeDomainEvent(LearningOutcome learningOutcome, LearningOutcomeEventType eventType){
+  private LearningOutcomeDomainEvent buildLearningOutcomeDomainEvent(
+      LearningOutcome learningOutcome, LearningOutcomeEventType eventType) {
     return new LearningOutcomeDomainEvent(learningOutcome.getId(), eventType);
   }
 

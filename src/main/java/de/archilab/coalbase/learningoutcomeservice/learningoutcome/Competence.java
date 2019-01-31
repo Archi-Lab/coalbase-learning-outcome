@@ -18,7 +18,7 @@ public class Competence {
   private String action;
   private TaxonomyLevel taxonomyLevel;
 
-  public static boolean isValid(Competence competence){
+  public static boolean isValid(Competence competence) {
     return !competence.getAction().isEmpty() && competence.getTaxonomyLevel() != null;
   }
 

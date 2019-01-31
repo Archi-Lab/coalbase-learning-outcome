@@ -9,7 +9,7 @@ public class LearningOutcomeDomainEvent extends DomainEvent {
   private final UniqueId<LearningOutcome> learningOutcomeIdentifier;
   private final LearningOutcomeEventType eventType;
 
-  protected LearningOutcomeDomainEvent(){
+  protected LearningOutcomeDomainEvent() {
     this.learningOutcomeIdentifier = null;
     this.eventType = null;
   }

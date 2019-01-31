@@ -8,4 +8,5 @@ import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
 @RepositoryRestResource
 public interface LearningOutcomeRepository extends
     CrudRepository<LearningOutcome, UniqueId<LearningOutcome>> {
+
 }
