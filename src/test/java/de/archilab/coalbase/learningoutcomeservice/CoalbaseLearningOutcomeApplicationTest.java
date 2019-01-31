@@ -17,6 +17,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -41,26 +58,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -70,7 +67,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   private static final String TOPIC = "learning-outcome";
   @ClassRule
   public final static EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
-      false, TOPIC);
+      false, CoalbaseLearningOutcomeApplicationTest.TOPIC);
   private static BlockingQueue<ConsumerRecord<String, String>> records;
   @Autowired
   private MockMvc mvc;
@@ -80,52 +77,54 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @BeforeClass
   public static void setup() {
     System.setProperty("spring.kafka.bootstrap-servers",
-        BROKER.getEmbeddedKafka().getBrokersAsString());
+        CoalbaseLearningOutcomeApplicationTest.BROKER.getEmbeddedKafka().getBrokersAsString());
 
     Map<String, Object> consumerProps = KafkaTestUtils
-        .consumerProps("testT", "false", BROKER.getEmbeddedKafka());
+        .consumerProps("testT", "false", CoalbaseLearningOutcomeApplicationTest.BROKER.getEmbeddedKafka());
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
     DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(
         consumerProps);
 
-    ContainerProperties containerProperties = new ContainerProperties(TOPIC);
+    ContainerProperties containerProperties = new ContainerProperties(
+        CoalbaseLearningOutcomeApplicationTest.TOPIC);
 
     KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
         cf, containerProperties);
 
-    records = new LinkedBlockingQueue<>();
+    CoalbaseLearningOutcomeApplicationTest.records = new LinkedBlockingQueue<>();
     container.setupMessageListener(new MessageListener<String, String>() {
 
       @Override
       public void onMessage(ConsumerRecord<String, String> record) {
-        records.add(record);
+        CoalbaseLearningOutcomeApplicationTest.records.add(record);
       }
 
     });
     container.setBeanName("templateTests");
     container.start();
     ContainerTestUtils
-        .waitForAssignment(container, BROKER.getEmbeddedKafka().getPartitionsPerTopic());
+        .waitForAssignment(container,
+            CoalbaseLearningOutcomeApplicationTest.BROKER.getEmbeddedKafka().getPartitionsPerTopic());
 
   }
 
   @Test
   public void notWhiteListedURLWithoutAuthenticationShouldFailWith401() throws Exception {
-    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(401));
+    this.mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(401));
   }
 
   @Test
   @WithMockUser(username = "testAdmin", roles = {"coalbase_admin"})
   public void notWhiteListedURLWithAdminRoleShouldSucceedWith200() throws Exception {
-    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
+    this.mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
   }
 
   @Test
   @WithMockUser(username = "testuser", roles = ("coalbase_user"))
   public void getAuthorizedHelloWorldWithNotSufficientRolesShouldFail403() throws Exception {
-    mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
+    this.mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
   }
 
   @Test
@@ -137,7 +136,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPost);
 
-    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
+    this.mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPost.getCompetence().getAction())))
@@ -150,7 +149,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPost.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
-    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
+    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -163,7 +162,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
@@ -180,7 +180,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPost);
 
-    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
+    this.mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
   }
 
@@ -192,7 +192,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
+    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
@@ -206,7 +206,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPut.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
-    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
+    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -221,7 +221,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPut.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
@@ -237,7 +238,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
+    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
   }
@@ -266,7 +267,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String url = "/learningOutcomes/" + identifier.toIdString();
 
-    mvc.perform(
+    this.mvc.perform(
         patch(url).content(objectMapper.writeValueAsString(learningOutcome)).with(csrf())
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(200))
         .andExpect(
@@ -283,7 +284,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
@@ -328,14 +330,15 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertNotNull(learningOutcome);
 
     String url = "/learningOutcomes/" + identifier.toIdString();
-    mvc.perform(delete(url).with(csrf())).andExpect(status().isNoContent());
+    this.mvc.perform(delete(url).with(csrf())).andExpect(status().isNoContent());
 
     Optional<LearningOutcome> optionalLearningOutcomeDeleted = this.learningOutcomeRepository
         .findById(identifier);
     assertFalse(optionalLearningOutcomeDeleted.isPresent());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = new ObjectMapper()
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
@@ -346,7 +349,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   @Test
   public void deleteLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
-    mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(401));
+    this.mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(401));
   }
 
   @Test
@@ -363,7 +366,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     String url = "/learningOutcomes/" + identifier.toIdString();
 
-    mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
+    this.mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$.competence.action", is(learningOutcome.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
@@ -387,7 +390,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     String url = "/learningOutcomes/";
 
-    mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
+    this.mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$._embedded.learningOutcomes[0].competence.action",
             is(learningOutcomes.get(0).getCompetence().getAction())))
