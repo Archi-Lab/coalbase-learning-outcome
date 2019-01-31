@@ -2,6 +2,16 @@ package de.archilab.coalbase.learningoutcomeservice.kafka;
 
 import static org.junit.Assert.assertEquals;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -24,19 +34,6 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
-
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @EmbeddedKafka(partitions = 1,
@@ -51,14 +48,15 @@ public class KafkaMessageProducerTest {
   @Test
   public void sendEvent() throws JsonProcessingException, InterruptedException {
     Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testT", "false",
-        embeddedKafka);
+        this.embeddedKafka);
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
     DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(
         consumerProps);
 
-    ContainerProperties containerProperties = new ContainerProperties(TOPIC);
+    ContainerProperties containerProperties = new ContainerProperties(
+        KafkaMessageProducerTest.TOPIC);
 
     KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
         cf, containerProperties);
@@ -75,9 +73,9 @@ public class KafkaMessageProducerTest {
     container.setBeanName("templateTests");
     container.start();
     ContainerTestUtils
-        .waitForAssignment(container, embeddedKafka.getPartitionsPerTopic());
+        .waitForAssignment(container, this.embeddedKafka.getPartitionsPerTopic());
     Map<String, Object> senderProps =
-        KafkaTestUtils.senderProps(embeddedKafka.getBrokersAsString());
+        KafkaTestUtils.senderProps(this.embeddedKafka.getBrokersAsString());
     senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
     ProducerFactory<String, String> pf = new DefaultKafkaProducerFactory<>(senderProps);
@@ -93,7 +91,7 @@ public class KafkaMessageProducerTest {
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = new LearningOutcomeDomainEvent(uniqueId,
         LearningOutcomeEventType.CREATED);
 
-    learningOutcomeMessageProducer.send(TOPIC, learningOutcomeDomainEvent);
+    learningOutcomeMessageProducer.send(KafkaMessageProducerTest.TOPIC, learningOutcomeDomainEvent);
 
     ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
 

@@ -1,7 +1,6 @@
 package de.archilab.coalbase.learningoutcomeservice.learningoutcome;
 
 import javax.persistence.Embeddable;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
