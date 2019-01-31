@@ -1,4 +1,4 @@
-package de.archilab.coalbase.learningoutcomeservice.core;
+package de.archilab.coalbase.learningoutcomeservice.learningoutcome;
 
 import org.springframework.data.rest.webmvc.spi.BackendIdConverter;
 import org.springframework.stereotype.Component;
@@ -6,11 +6,8 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.UUID;
 
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeIdentifier;
-
 @Component
-public class CustomBackendIdConverter implements BackendIdConverter {
+public class LearningOutcomeIdConverter implements BackendIdConverter {
 
   @Override
   public Serializable fromRequestId(String id, Class<?> entityType) {
