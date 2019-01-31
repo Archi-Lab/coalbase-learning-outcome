@@ -13,6 +13,7 @@ services:
     networks:
       - learning_outcome_ms_db
   learning_outcome_ms:
+    image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome
     ports:
       - "8080:8080"
     environment:

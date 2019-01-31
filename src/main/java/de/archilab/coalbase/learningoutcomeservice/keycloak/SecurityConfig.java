@@ -43,6 +43,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   private static final String LO_ASSOCIATION_RESOURCE = "/learningOutcomes/*/**";
   private static final String H2_CONSOLE = "/h2-console";
   private static final String H2_CONSOLE_SUB = "/h2-console/*";
+  private static final String SEMESTER_LIST_RESOURCE = "/semesters";
+  private static final String SEMESTER_ITEM_RESOURCE = "/semesters/*";
+  private static final String SEMESTER_ASSOCIATION_RESOURCE = "/semesters/*/**";
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) {
@@ -74,15 +77,20 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .csrf().disable()
         .authorizeRequests()
 
-        .antMatchers("/browser/**").permitAll()
+        .antMatchers("/browser/**")
+        .permitAll()
 
-        .antMatchers("/profile/**").permitAll()
+        .antMatchers("/profile/**")
+        .permitAll()
 
-        .antMatchers("/studyRooms").permitAll()
+        .antMatchers("/studyRooms")
+        .permitAll()
 
-        .antMatchers("/studyRooms/**").permitAll()
-        // LearningOutcome (Standard endpoints provided by SDR)
-        // ListResource
+        .antMatchers("/studyRooms/**")
+        .permitAll()
+
+        //LearningOutcome (Standard endpoints provided by SDR)
+        //ListResource
         .antMatchers(HttpMethod.GET, SecurityConfig.LO_LIST_RESOURCE)
         .permitAll()
 
@@ -91,7 +99,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
         .antMatchers(HttpMethod.POST, SecurityConfig.LO_LIST_RESOURCE)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-        // ItemResource
+        //ItemResource
         .antMatchers(HttpMethod.GET, SecurityConfig.LO_ITEM_RESOURCE)
         .permitAll()
 
@@ -106,7 +114,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
         .antMatchers(HttpMethod.DELETE, SecurityConfig.LO_ITEM_RESOURCE)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-        // AssociationResource
+        //AssociationResource
         .antMatchers(HttpMethod.GET, SecurityConfig.LO_ASSOCIATION_RESOURCE)
         .permitAll()
 
@@ -118,9 +126,49 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
         .antMatchers(HttpMethod.DELETE, SecurityConfig.LO_ASSOCIATION_RESOURCE)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        //Semester
+        //ListResource
+        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_LIST_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.HEAD, SecurityConfig.SEMESTER_LIST_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.POST, SecurityConfig.SEMESTER_LIST_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+        //ItemResource
+        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.HEAD, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.PATCH, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+        //AssociationResource
+        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.POST, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
         // H2-Console
         .antMatchers(HttpMethod.GET, SecurityConfig.H2_CONSOLE, SecurityConfig.H2_CONSOLE_SUB)
         .permitAll()
+
         // Fallback
         .anyRequest().hasRole(SecurityConfig.ROLE_ADMIN);
   }

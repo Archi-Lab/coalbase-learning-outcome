@@ -32,13 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeIdentifier;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
@@ -57,19 +56,19 @@ public class CoalbaseLearningOutcomeApplicationTest {
   private LearningOutcomeRepository learningOutcomeRepository;
 
   @Test
-  public void notWhiteListedURLWithoutAuthenticationShouldFailWith401() throws Exception{
+  public void notWhiteListedURLWithoutAuthenticationShouldFailWith401() throws Exception {
     mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(401));
   }
 
   @Test
   @WithMockUser(username = "testAdmin", roles = {"coalbase_admin"})
-  public void notWhiteListedURLWithAdminRoleShouldSucceedWith200() throws Exception{
+  public void notWhiteListedURLWithAdminRoleShouldSucceedWith200() throws Exception {
     mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
   }
 
   @Test
   @WithMockUser(username = "testuser", roles = ("coalbase_user"))
-  public void getAuthorizedHelloWorldWithNotSufficientRolesShouldFail403() throws Exception{
+  public void getAuthorizedHelloWorldWithNotSufficientRolesShouldFail403() throws Exception {
     mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
   }
 
@@ -99,7 +98,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
-        .findById(learningOutcomes.get(0).getLearningOutcomeIdentifier());
+        .findById(learningOutcomes.get(0).getId());
     assertTrue(optionalLearningOutcome.isPresent());
     LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
     assertEquals(savedLearningOutcome.getCompetence(), learningOutcomeToPost.getCompetence());
@@ -128,7 +127,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getLearningOutcomeIdentifier())
+    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
@@ -146,11 +145,11 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
-        .findById(learningOutcomes.get(0).getLearningOutcomeIdentifier());
+        .findById(learningOutcomes.get(0).getId());
     assertTrue(optionalLearningOutcome.isPresent());
     LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
-    assertEquals(savedLearningOutcome.getLearningOutcomeIdentifier(),
-        learningOutcomeToPut.getLearningOutcomeIdentifier());
+    assertEquals(savedLearningOutcome.getId(),
+        learningOutcomeToPut.getId());
     assertEquals(savedLearningOutcome.getCompetence(), learningOutcomeToPut.getCompetence());
     assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPut.getTools().get(0));
     assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPut.getTools().get(1));
@@ -164,7 +163,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getLearningOutcomeIdentifier())
+    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
   }
@@ -172,7 +171,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void patchLearningOutcome() throws Exception {
-    LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
+    UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
 
@@ -181,23 +180,32 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertNotNull(learningOutcome);
 
     Competence competence = new Competence("Action", TaxonomyLevel.ANALYSIS);
+    learningOutcome.setCompetence(competence);
+
+    //learningOutcome.getTools().stream().forEach(learningOutcome::removeTool);
     Tool tool = new Tool("Tool");
+    learningOutcome.addTool(tool);
+
     Purpose purpose = new Purpose("Purpose");
-    LearningOutcome learningOutcomeToPatch = new LearningOutcome(identifier, competence,
-        Arrays.asList(tool), purpose);
+    learningOutcome.setPurpose(purpose);
 
     ObjectMapper objectMapper = new ObjectMapper();
-    String url = "/learningOutcomes/" + identifier.getId().toString();
+    String url = "/learningOutcomes/" + identifier.toIdString();
 
-    mvc.perform(patch(url).content(objectMapper.writeValueAsString(learningOutcomeToPatch)).with(csrf())
-        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(200))
+    mvc.perform(
+        patch(url).content(objectMapper.writeValueAsString(learningOutcome)).with(csrf())
+            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(200))
         .andExpect(
-            jsonPath("$.competence.action", is(learningOutcomeToPatch.getCompetence().getAction())))
+            jsonPath("$.competence.action", is(learningOutcome.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
-            is(learningOutcomeToPatch.getCompetence().getTaxonomyLevel().name())))
+            is(learningOutcome.getCompetence().getTaxonomyLevel().name())))
         .andExpect(
-            jsonPath("$.tools[0].value", is(learningOutcomeToPatch.getTools().get(0).getValue())))
-        .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPatch.getPurpose().getValue())))
+            jsonPath("$.tools[0].value", is(learningOutcome.getTools().get(0).getValue())))
+        .andExpect(
+            jsonPath("$.tools[1].value", is(learningOutcome.getTools().get(1).getValue())))
+        .andExpect(
+            jsonPath("$.tools[2].value", is(learningOutcome.getTools().get(2).getValue())))
+        .andExpect(jsonPath("$.purpose.value", is(learningOutcome.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
   }
@@ -230,14 +238,14 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void deleteLearningOutcome() throws Exception {
-    LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
+    UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
     assertTrue(optionalLearningOutcome.isPresent());
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
     assertNotNull(learningOutcome);
 
-    String url = "/learningOutcomes/" + identifier.getId().toString();
+    String url = "/learningOutcomes/" + identifier.toIdString();
     mvc.perform(delete(url).with(csrf())).andExpect(status().isNoContent());
 
     Optional<LearningOutcome> optionalLearningOutcomeDeleted = this.learningOutcomeRepository
@@ -255,7 +263,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void getLearningOutcomeByUUID() throws Exception {
-    LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
+    UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
 
@@ -263,7 +271,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
     assertNotNull(learningOutcome);
 
-    String url = "/learningOutcomes/" + identifier.getId().toString();
+    String url = "/learningOutcomes/" + identifier.toIdString();
 
     mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
@@ -316,10 +324,10 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   }
 
-  private LearningOutcomeIdentifier createLearningOutcomeToRepo() {
+  private UniqueId<LearningOutcome> createLearningOutcomeToRepo() {
     final LearningOutcome learningOutcome = buildSampleLearningOutcome();
     this.learningOutcomeRepository.save(learningOutcome);
-    return learningOutcome.getLearningOutcomeIdentifier();
+    return learningOutcome.getId();
   }
 
   private LearningOutcome buildSampleLearningOutcome() {
@@ -334,12 +342,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     Purpose purpose = new Purpose(
         "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
 
-    UUID uuid = UUID.randomUUID();
-    LearningOutcomeIdentifier learningOutcomeIdentifier = new LearningOutcomeIdentifier(uuid);
-
-    return new LearningOutcome(learningOutcomeIdentifier,
-        competence,
-        Arrays.asList(tool0, tool1), purpose);
+    return new LearningOutcome(competence, Arrays.asList(tool0, tool1), purpose);
 
   }
 
