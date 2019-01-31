@@ -17,6 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.utils.ContainerTestUtils;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +43,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,6 +70,49 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   @Autowired
   private LearningOutcomeRepository learningOutcomeRepository;
+
+  private static final String TOPIC = "learning-outcome";
+
+  private static BlockingQueue<ConsumerRecord<String, String>> records;
+
+  @ClassRule
+  public static EmbeddedKafkaRule broker = new EmbeddedKafkaRule(1,
+      false, TOPIC);
+
+  @BeforeClass
+  public static void setup() {
+    System.setProperty("spring.kafka.bootstrap-servers",
+        broker.getEmbeddedKafka().getBrokersAsString());
+
+    Map<String, Object> consumerProps = KafkaTestUtils
+        .consumerProps("testT", "false", broker.getEmbeddedKafka());
+
+    consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+
+    DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(
+        consumerProps);
+
+    ContainerProperties containerProperties = new ContainerProperties(TOPIC);
+
+    KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
+        cf, containerProperties);
+
+    records = new LinkedBlockingQueue<>();
+    container.setupMessageListener(new MessageListener<String, String>() {
+
+      @Override
+      public void onMessage(ConsumerRecord<String, String> record) {
+        System.out.println(record);
+        records.add(record);
+      }
+
+    });
+    container.setBeanName("templateTests");
+    container.start();
+    ContainerTestUtils
+        .waitForAssignment(container, broker.getEmbeddedKafka().getPartitionsPerTopic());
+
+  }
 
   @Test
   public void notWhiteListedURLWithoutAuthenticationShouldFailWith401() throws Exception {
@@ -94,6 +153,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPost.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
+    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
     List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
@@ -105,6 +165,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPost.getTools().get(0));
     assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPost.getTools().get(1));
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
+
   }
 
   @Test

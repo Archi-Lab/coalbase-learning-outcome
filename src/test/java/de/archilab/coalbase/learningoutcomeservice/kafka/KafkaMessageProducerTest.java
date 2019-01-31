@@ -1,9 +1,11 @@
-package de.archilab.coalbase.learningoutcomeservice.learningoutcome;
+package de.archilab.coalbase.learningoutcomeservice.kafka;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +24,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -32,17 +32,16 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.archilab.coalbase.learningoutcomeservice.core.DomainEvent;
-import de.archilab.coalbase.learningoutcomeservice.core.EventType;
 import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @EmbeddedKafka(partitions = 1,
     topics = {"test-topic"})
-public class LearningOutcomeMessageProducerTest {
-
+public class KafkaMessageProducerTest {
 
   private static final String TOPIC = "test-topic";
 
@@ -53,6 +52,9 @@ public class LearningOutcomeMessageProducerTest {
   public void sendEvent() throws JsonProcessingException, InterruptedException {
     Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testT", "false",
         embeddedKafka);
+
+    consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+
     DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(
         consumerProps);
 
@@ -82,33 +84,24 @@ public class LearningOutcomeMessageProducerTest {
     ProducerFactory<String, String> pf = new DefaultKafkaProducerFactory<>(senderProps);
     KafkaTemplate<String, String> template = new KafkaTemplate<>(pf);
 
-    LearningOutcomeMessageProducer learningOutcomeMessageProducer = new LearningOutcomeMessageProducer(
-        TOPIC, template, new ObjectMapper());
+    ObjectMapper objectMapper = new ObjectMapper();
 
-    Competence competence = new Competence(
-        "Die Studierenden können Marketingentscheidungen informationsgestützt treffen",
-        TaxonomyLevel.SYNTHESIS);
+    KafkaMessageProducer learningOutcomeMessageProducer = new KafkaMessageProducer(template,
+        objectMapper);
 
-    Tool tool0 = new Tool(
-        "das Makro- und Mikroumfeld des relevanten Marktes so wie das eigenen Unternehmen analysieren");
-    Tool tool1 = new Tool(
-        "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen");
-    Purpose purpose = new Purpose(
-        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
+    UniqueId<LearningOutcome> uniqueId = new UniqueId<>();
 
+    LearningOutcomeDomainEvent learningOutcomeDomainEvent = new LearningOutcomeDomainEvent(uniqueId,
+        LearningOutcomeEventType.CREATED);
 
-    LearningOutcome learningOutcome = new LearningOutcome(competence,
-        Arrays.asList(tool0, tool1), purpose);
+    learningOutcomeMessageProducer.send(TOPIC, learningOutcomeDomainEvent);
 
+    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
 
-    LearningOutcomeDomainEvent learningOutcomeDomainEvent = new LearningOutcomeDomainEvent();
-
-
-    learningOutcomeMessageProducer.send(learningOutcomeDomainEvent);
-
-    assertEquals(records.poll(10, TimeUnit.SECONDS).key(),
+    assertEquals(record.key(),
         learningOutcomeDomainEvent.getEventID().toString());
 
+    assertEquals(record.value(), objectMapper.writeValueAsString(learningOutcomeDomainEvent));
   }
 
 }

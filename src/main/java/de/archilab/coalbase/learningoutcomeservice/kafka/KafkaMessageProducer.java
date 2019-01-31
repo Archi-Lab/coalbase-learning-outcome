@@ -1,4 +1,4 @@
-package de.archilab.coalbase.learningoutcomeservice.learningoutcome;
+package de.archilab.coalbase.learningoutcomeservice.kafka;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,29 +16,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.archilab.coalbase.learningoutcomeservice.core.DomainEvent;
 
 @Component
-public class LearningOutcomeMessageProducer {
+public class KafkaMessageProducer {
 
-  private final Logger logger = LoggerFactory.getLogger(LearningOutcomeMessageProducer.class);
-  private final String topic;
+  private final Logger logger = LoggerFactory.getLogger(KafkaMessageProducer.class);
   private final KafkaTemplate<String, String> template;
   private final ObjectMapper objectMapper;
 
   @Autowired
-  public LearningOutcomeMessageProducer(
-      @Value("{learningOutcome.topic}") final String topic,
+  public KafkaMessageProducer(
       final KafkaTemplate<String, String> template,
       final ObjectMapper objectMapper) {
     this.template = template;
-    this.topic = topic;
     this.objectMapper = objectMapper;
 
   }
 
-  public void send(final DomainEvent learningOutcomeEvent)
+  public void send(final String topic, final DomainEvent learningOutcomeEvent)
       throws JsonProcessingException {
 
     ListenableFuture<SendResult<String, String>> future = this.template
-        .send(this.topic, learningOutcomeEvent.getEventID().toString(),
+        .send(topic, learningOutcomeEvent.getEventID().toString(),
             this.objectMapper.writeValueAsString(learningOutcomeEvent));
 
     future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
@@ -56,5 +53,4 @@ public class LearningOutcomeMessageProducer {
 
     });
   }
-
 }

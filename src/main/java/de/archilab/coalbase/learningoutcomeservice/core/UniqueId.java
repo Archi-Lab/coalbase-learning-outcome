@@ -14,7 +14,7 @@ public class UniqueId<T> implements Serializable {
   @Getter
   private final UUID uuid;
 
-  protected UniqueId() {
+  public UniqueId() {
     this.uuid = UUID.randomUUID();
   }
 
