@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,10 +26,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString(callSuper = true)
-public class LearningOutcome {
-
-  @EmbeddedId
-  LearningOutcomeIdentifier learningOutcomeIdentifier = new LearningOutcomeIdentifier();
+public class LearningOutcome extends EntityWithUniqueId<LearningOutcome> {
 
   @Setter
   private Competence competence;
@@ -38,6 +36,7 @@ public class LearningOutcome {
 
   @Setter
   private Purpose purpose;
+
 
   public void addTool(Tool tool) {
     if (this.tools == null) {

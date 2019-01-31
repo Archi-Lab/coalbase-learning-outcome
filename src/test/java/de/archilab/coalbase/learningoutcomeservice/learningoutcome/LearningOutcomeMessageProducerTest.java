@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.archilab.coalbase.learningoutcomeservice.core.DomainEvent;
 import de.archilab.coalbase.learningoutcomeservice.core.EventType;
+import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
 
 
 @RunWith(SpringRunner.class)
@@ -95,14 +96,13 @@ public class LearningOutcomeMessageProducerTest {
     Purpose purpose = new Purpose(
         "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
 
-    UUID uuid = UUID.randomUUID();
-    LearningOutcomeIdentifier learningOutcomeIdentifier = new LearningOutcomeIdentifier(uuid);
 
-    LearningOutcome learningOutcome = new LearningOutcome(learningOutcomeIdentifier, competence,
+    LearningOutcome learningOutcome = new LearningOutcome(competence,
         Arrays.asList(tool0, tool1), purpose);
 
-    DomainEvent learningOutcomeDomainEvent = new DomainEvent(EventType.CREATED,
-        learningOutcome);
+
+    LearningOutcomeDomainEvent learningOutcomeDomainEvent = new LearningOutcomeDomainEvent();
+
 
     learningOutcomeMessageProducer.send(learningOutcomeDomainEvent);
 
