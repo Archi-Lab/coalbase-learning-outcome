@@ -25,14 +25,30 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @Configuration
 @ComponentScan(
     basePackageClasses = KeycloakSecurityComponents.class,
-    excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"))
+    excludeFilters = @ComponentScan.Filter(
+        type = FilterType.REGEX,
+        pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"
+    )
+)
 //end of workaround
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
+  private static final String ROLE_STUDENT = "coalbase_student";
+  private static final String ROLE_PROFESSOR = "coalbase_professor";
+  private static final String ROLE_ADMIN = "coalbase_admin";
+  private static final String LO_LIST_RESOURCE = "/learningOutcomes";
+  private static final String LO_ITEM_RESOURCE = "/learningOutcomes/*";
+  private static final String LO_ASSOCIATION_RESOURCE = "/learningOutcomes/*/**";
+  private static final String H2_CONSOLE = "/h2-console";
+  private static final String H2_CONSOLE_SUB = "/h2-console/*";
+  private static final String SEMESTER_LIST_RESOURCE = "/semesters";
+  private static final String SEMESTER_ITEM_RESOURCE = "/semesters/*";
+  private static final String SEMESTER_ASSOCIATION_RESOURCE = "/semesters/*/**";
+
   @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth){
+  public void configureGlobal(AuthenticationManagerBuilder auth) {
     KeycloakAuthenticationProvider keycloakAuthenticationProvider
         = keycloakAuthenticationProvider();
     keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
@@ -40,76 +56,120 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public KeycloakConfigResolver keycloakConfigResolver(){
+  public KeycloakConfigResolver keycloakConfigResolver() {
     return new KeycloakSpringBootConfigResolver();
   }
 
   @Bean
   @Override
   protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-    //Since this is a stateless REST service, no sessions are needed
+    // Since this is a stateless REST service, no sessions are needed
     return new NullAuthenticatedSessionStrategy();
   }
 
-  private static final String ROLE_STUDENT = "coalbase_student";
-  private static final String ROLE_PROFESSOR = "coalbase_professor";
-  private static final String ROLE_ADMIN = "coalbase_admin";
-
-  private static final String LO_LIST_RESOURCE = "/learningOutcomes";
-  private static final String LO_ITEM_RESOURCE = "/learningOutcomes/*";
-  private static final String LO_ASSOCIATION_RESOURCE = "/learningOutcomes/*/**";
-  
-  private static final String SEMESTER_LIST_RESOURCE = "/semesters";
-  private static final String SEMESTER_ITEM_RESOURCE = "/semesters/*";
-  private static final String SEMESTER_ASSOCIATION_RESOURCE = "/semesters/*/**";
-  
   @Override
-  protected void configure(HttpSecurity httpSecurity) throws Exception{
+  protected void configure(HttpSecurity httpSecurity) throws Exception {
     super.configure(httpSecurity);
-    httpSecurity.cors()
+    httpSecurity
+        .cors()
         .and()
-        .csrf().disable() //Possible Security Issue! Take a look into this!
+        // Possible Security Issue! Take a look into this!
+        .csrf().disable()
         .authorizeRequests()
-        .antMatchers("/browser/**").permitAll()
-        .antMatchers("/profile/**").permitAll()
-        .antMatchers("/studyRooms").permitAll()
-        .antMatchers("/studyRooms/**").permitAll()
+
+        .antMatchers("/browser/**")
+        .permitAll()
+
+        .antMatchers("/profile/**")
+        .permitAll()
+
+        .antMatchers("/studyRooms")
+        .permitAll()
+
+        .antMatchers("/studyRooms/**")
+        .permitAll()
+
         //LearningOutcome (Standard endpoints provided by SDR)
         //ListResource
-        .antMatchers(HttpMethod.GET, LO_LIST_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.HEAD, LO_LIST_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.POST, LO_LIST_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.GET, SecurityConfig.LO_LIST_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.HEAD, SecurityConfig.LO_LIST_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.POST, SecurityConfig.LO_LIST_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
         //ItemResource
-        .antMatchers(HttpMethod.GET, LO_ITEM_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.HEAD, LO_ITEM_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.PUT, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
-        .antMatchers(HttpMethod.PATCH, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
-        .antMatchers(HttpMethod.DELETE, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.GET, SecurityConfig.LO_ITEM_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.HEAD, SecurityConfig.LO_ITEM_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, SecurityConfig.LO_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.PATCH, SecurityConfig.LO_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, SecurityConfig.LO_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
         //AssociationResource
-        .antMatchers(HttpMethod.GET, LO_ASSOCIATION_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.PUT, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
-        .antMatchers(HttpMethod.POST, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
-        .antMatchers(HttpMethod.DELETE, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
-        
+        .antMatchers(HttpMethod.GET, SecurityConfig.LO_ASSOCIATION_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, SecurityConfig.LO_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.POST, SecurityConfig.LO_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, SecurityConfig.LO_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
         //Semester
         //ListResource
-        .antMatchers(HttpMethod.GET, SEMESTER_LIST_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.HEAD, SEMESTER_LIST_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.POST, SEMESTER_LIST_RESOURCE).hasAnyRole(ROLE_ADMIN)
-        //ItemResource
-        .antMatchers(HttpMethod.GET, SEMESTER_ITEM_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.HEAD, SEMESTER_ITEM_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.PUT, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
-        .antMatchers(HttpMethod.PATCH, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
-        .antMatchers(HttpMethod.DELETE, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
-        //AssociationResource
-        .antMatchers(HttpMethod.GET, SEMESTER_ASSOCIATION_RESOURCE).permitAll()
-        .antMatchers(HttpMethod.PUT, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
-        .antMatchers(HttpMethod.POST, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
-        .antMatchers(HttpMethod.DELETE, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_LIST_RESOURCE)
+        .permitAll()
 
-        .and()
-        .authorizeRequests()
-        .anyRequest().hasRole(ROLE_ADMIN);
+        .antMatchers(HttpMethod.HEAD, SecurityConfig.SEMESTER_LIST_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.POST, SecurityConfig.SEMESTER_LIST_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+        //ItemResource
+        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.HEAD, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.PATCH, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, SecurityConfig.SEMESTER_ITEM_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+        //AssociationResource
+        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.POST, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
+        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
+
+        // H2-Console
+        .antMatchers(HttpMethod.GET, SecurityConfig.H2_CONSOLE, SecurityConfig.H2_CONSOLE_SUB)
+        .permitAll()
+
+        // Fallback
+        .anyRequest().hasRole(SecurityConfig.ROLE_ADMIN);
   }
 }
