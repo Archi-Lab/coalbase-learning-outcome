@@ -2,21 +2,20 @@ package de.archilab.coalbase.learningoutcomeservice.keycloak;
 
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
-import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
+import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
-import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter;
-import org.keycloak.adapters.springsecurity.filter.KeycloakPreAuthActionsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
@@ -27,14 +26,22 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @ComponentScan(
     basePackageClasses = KeycloakSecurityComponents.class,
     excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"))
-//@EnableWebSecurity
 //end of workaround
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
   @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder){
-    authenticationManagerBuilder.authenticationProvider(keycloakAuthenticationProvider());
+  public void configureGlobal(AuthenticationManagerBuilder auth){
+    KeycloakAuthenticationProvider keycloakAuthenticationProvider
+        = keycloakAuthenticationProvider();
+    keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
+    auth.authenticationProvider(keycloakAuthenticationProvider);
+  }
+
+  @Bean
+  public KeycloakConfigResolver keycloakConfigResolver(){
+    return new KeycloakSpringBootConfigResolver();
   }
 
   @Bean
@@ -44,34 +51,65 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     return new NullAuthenticatedSessionStrategy();
   }
 
+  private static final String ROLE_STUDENT = "coalbase_student";
+  private static final String ROLE_PROFESSOR = "coalbase_professor";
+  private static final String ROLE_ADMIN = "coalbase_admin";
+
+  private static final String LO_LIST_RESOURCE = "/learningOutcomes";
+  private static final String LO_ITEM_RESOURCE = "/learningOutcomes/*";
+  private static final String LO_ASSOCIATION_RESOURCE = "/learningOutcomes/*/**";
+  
+  private static final String SEMESTER_LIST_RESOURCE = "/semesters";
+  private static final String SEMESTER_ITEM_RESOURCE = "/semesters/*";
+  private static final String SEMESTER_ASSOCIATION_RESOURCE = "/semesters/*/**";
+  
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception{
     super.configure(httpSecurity);
-    httpSecurity.authorizeRequests()
-        .antMatchers("/learningOutcomes/**").permitAll()
-        .anyRequest().authenticated();
+    httpSecurity.cors()
+        .and()
+        .csrf().disable() //Possible Security Issue! Take a look into this!
+        .authorizeRequests()
+        .antMatchers("/browser/**").permitAll()
+        .antMatchers("/profile/**").permitAll()
+        .antMatchers("/studyRooms").permitAll()
+        .antMatchers("/studyRooms/**").permitAll()
+        //LearningOutcome (Standard endpoints provided by SDR)
+        //ListResource
+        .antMatchers(HttpMethod.GET, LO_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, LO_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.POST, LO_LIST_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        //ItemResource
+        .antMatchers(HttpMethod.GET, LO_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, LO_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.PATCH, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, LO_ITEM_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        //AssociationResource
+        .antMatchers(HttpMethod.GET, LO_ASSOCIATION_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.POST, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, LO_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_PROFESSOR, ROLE_ADMIN)
+        
+        //Semester
+        //ListResource
+        .antMatchers(HttpMethod.GET, SEMESTER_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, SEMESTER_LIST_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.POST, SEMESTER_LIST_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        //ItemResource
+        .antMatchers(HttpMethod.GET, SEMESTER_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.HEAD, SEMESTER_ITEM_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.PATCH, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, SEMESTER_ITEM_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        //AssociationResource
+        .antMatchers(HttpMethod.GET, SEMESTER_ASSOCIATION_RESOURCE).permitAll()
+        .antMatchers(HttpMethod.PUT, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.POST, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
+        .antMatchers(HttpMethod.DELETE, SEMESTER_ASSOCIATION_RESOURCE).hasAnyRole(ROLE_ADMIN)
+
+        .and()
+        .authorizeRequests()
+        .anyRequest().hasRole(ROLE_ADMIN);
   }
-
-  @Bean
-  public KeycloakConfigResolver keycloakConfigResolver(){
-    return new KeycloakSpringBootConfigResolver();
-  }
-
-  @Bean
-  public FilterRegistrationBean keycloakAuthenticationProcessingFilterRegistrationBean(
-      final KeycloakAuthenticationProcessingFilter filter) {
-    final FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
-    registrationBean.setEnabled(false);
-    return registrationBean;
-  }
-
-  @Bean
-  public FilterRegistrationBean keycloakPreAuthActionsFilterRegistrationBean(
-      final KeycloakPreAuthActionsFilter filter) {
-    final FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
-    registrationBean.setEnabled(false);
-    return registrationBean;
-  }
-
-
 }

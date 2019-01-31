@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +57,24 @@ public class CoalbaseLearningOutcomeApplicationTest {
   private LearningOutcomeRepository learningOutcomeRepository;
 
   @Test
+  public void notWhiteListedURLWithoutAuthenticationShouldFailWith401() throws Exception{
+    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(401));
+  }
+
+  @Test
+  @WithMockUser(username = "testAdmin", roles = {"coalbase_admin"})
+  public void notWhiteListedURLWithAdminRoleShouldSucceedWith200() throws Exception{
+    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
+  }
+
+  @Test
+  @WithMockUser(username = "testuser", roles = ("coalbase_user"))
+  public void getAuthorizedHelloWorldWithNotSufficientRolesShouldFail403() throws Exception{
+    mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
+  }
+
+  @Test
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void createLearningOutcome() throws Exception {
 
     LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
@@ -87,10 +106,22 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPost.getTools().get(0));
     assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPost.getTools().get(1));
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
-
   }
 
   @Test
+  public void createLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
+
+    LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String json = objectMapper.writeValueAsString(learningOutcomeToPost);
+
+    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
+  }
+
+  @Test
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void putLearningOutcome() throws Exception {
     LearningOutcome learningOutcomeToPut = buildSampleLearningOutcome();
 
@@ -127,6 +158,19 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   @Test
+  public void putLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
+    LearningOutcome learningOutcomeToPut = buildSampleLearningOutcome();
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String json = objectMapper.writeValueAsString(learningOutcomeToPut);
+
+    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getLearningOutcomeIdentifier())
+        .content(json).with(csrf())
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
+  }
+
+  @Test
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void patchLearningOutcome() throws Exception {
     LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -158,7 +202,33 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   }
 
+/*  @Test
+  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  public void patchLearningOutcomeWithoutAuthorizationShouldFail() throws Exception {
+    LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
+    Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
+        .findById(identifier);
+
+    assertTrue(optionalLearningOutcome.isPresent());
+    LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
+    assertNotNull(learningOutcome);
+
+    Competence competence = new Competence("Action", TaxonomyLevel.ANALYSIS);
+    Tool tool = new Tool("Tool");
+    Purpose purpose = new Purpose("Purpose");
+    LearningOutcome learningOutcomeToPatch = new LearningOutcome(identifier, competence,
+        Arrays.asList(tool), purpose);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String url = "/learningOutcomes/" + identifier.getId().toString();
+
+    mvc.perform(patch(url).content(objectMapper.writeValueAsString(learningOutcomeToPatch)).with(csrf())
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
+  }*/
+
   @Test
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void deleteLearningOutcome() throws Exception {
     LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -177,6 +247,13 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   @Test
+  public void deleteLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
+    mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(401));
+  }
+
+  @Test
+  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void getLearningOutcomeByUUID() throws Exception {
     LearningOutcomeIdentifier identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -201,6 +278,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   @Test
+  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
+  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void getLearningOutcomes() throws Exception {
     this.createLearningOutcomeToRepo();
     this.createLearningOutcomeToRepo();
