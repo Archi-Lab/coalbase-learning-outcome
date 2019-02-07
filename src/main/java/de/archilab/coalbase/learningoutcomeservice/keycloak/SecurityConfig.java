@@ -77,9 +77,16 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .csrf().disable()
         // Needed for H2 console. Possible security issue!
         .headers().frameOptions().sameOrigin()
+
         .and()
         .authorizeRequests()
 
+        //WhiteList local
+        // H2-Console
+        .antMatchers(SecurityConfig.H2_CONSOLE, SecurityConfig.H2_CONSOLE_SUB)
+        .permitAll()
+
+        //WhiteList prod
         .antMatchers("/browser/**")
         .permitAll()
 
@@ -167,10 +174,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
         .antMatchers(HttpMethod.DELETE, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
         .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-
-        // H2-Console
-        .antMatchers(SecurityConfig.H2_CONSOLE, SecurityConfig.H2_CONSOLE_SUB)
-        .permitAll()
 
         // Fallback
         .anyRequest().hasRole(SecurityConfig.ROLE_ADMIN);
