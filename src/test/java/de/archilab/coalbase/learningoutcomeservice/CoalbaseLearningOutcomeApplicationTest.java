@@ -96,14 +96,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
         cf, containerProperties);
 
     records = new LinkedBlockingQueue<>();
-    container.setupMessageListener(new MessageListener<String, String>() {
-
-      @Override
-      public void onMessage(ConsumerRecord<String, String> record) {
-        records.add(record);
-      }
-
-    });
+    container.setupMessageListener((MessageListener<String, String>) record -> records.add(record));
     container.setBeanName("templateTests");
     container.start();
     ContainerTestUtils

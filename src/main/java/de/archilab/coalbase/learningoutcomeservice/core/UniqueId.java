@@ -27,7 +27,7 @@ public class UniqueId<T> implements Serializable {
   }
 
   public String toIdString() {
-    return uuid.toString();
+    return this.uuid.toString();
   }
 
 }
