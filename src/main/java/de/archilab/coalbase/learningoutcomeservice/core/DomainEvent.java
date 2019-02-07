@@ -7,12 +7,12 @@ public abstract class DomainEvent {
   private final UUID eventID;
 
   public DomainEvent() {
-    eventID = UUID.randomUUID();
+    this.eventID = UUID.randomUUID();
   }
 
   public abstract String getEventType();
 
   public UUID getEventID() {
-    return eventID;
+    return this.eventID;
   }
 }

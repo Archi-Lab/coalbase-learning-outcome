@@ -2,7 +2,6 @@ package de.archilab.coalbase.learningoutcomeservice.core;
 
 import java.io.Serializable;
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,6 +10,7 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class UniqueId<T> implements Serializable {
 
+  private static final long serialVersionUID = -7931626090547229453L;
   @Getter
   private final UUID uuid;
 

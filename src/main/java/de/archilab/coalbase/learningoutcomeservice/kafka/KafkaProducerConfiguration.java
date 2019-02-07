@@ -1,5 +1,7 @@
 package de.archilab.coalbase.learningoutcomeservice.kafka;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
@@ -11,9 +13,6 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 public class KafkaProducerConfiguration {
 
@@ -23,7 +22,7 @@ public class KafkaProducerConfiguration {
   public KafkaProducerConfiguration(
       @Value("${spring.kafka.bootstrap-servers}") final String servers) {
     this.servers = servers;
-    log.info(servers);
+    KafkaProducerConfiguration.log.info(servers);
   }
 
   @Bean
@@ -38,7 +37,7 @@ public class KafkaProducerConfiguration {
   private Map<String, Object> producerConfigs() {
     final Map<String, Object> props = new HashMap<>();
 
-    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.servers);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 500);

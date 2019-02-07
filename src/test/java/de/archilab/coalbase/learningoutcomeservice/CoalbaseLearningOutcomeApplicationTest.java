@@ -70,7 +70,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   private static final String TOPIC = "learning-outcome";
   @ClassRule
   public final static EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
-      false, TOPIC);
+      false, CoalbaseLearningOutcomeApplicationTest.TOPIC);
   private static BlockingQueue<ConsumerRecord<String, String>> records;
   @Autowired
   private MockMvc mvc;
@@ -80,27 +80,32 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @BeforeClass
   public static void setup() {
     System.setProperty("spring.kafka.bootstrap-servers",
-        BROKER.getEmbeddedKafka().getBrokersAsString());
+        CoalbaseLearningOutcomeApplicationTest.BROKER.getEmbeddedKafka().getBrokersAsString());
 
     Map<String, Object> consumerProps = KafkaTestUtils
-        .consumerProps("testT", "false", BROKER.getEmbeddedKafka());
+        .consumerProps("testT", "false",
+            CoalbaseLearningOutcomeApplicationTest.BROKER.getEmbeddedKafka());
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
     DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(
         consumerProps);
 
-    ContainerProperties containerProperties = new ContainerProperties(TOPIC);
+    ContainerProperties containerProperties = new ContainerProperties(
+        CoalbaseLearningOutcomeApplicationTest.TOPIC);
 
     KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
         cf, containerProperties);
 
     records = new LinkedBlockingQueue<>();
     container.setupMessageListener((MessageListener<String, String>) record -> records.add(record));
+
     container.setBeanName("templateTests");
     container.start();
     ContainerTestUtils
-        .waitForAssignment(container, BROKER.getEmbeddedKafka().getPartitionsPerTopic());
+        .waitForAssignment(container,
+            CoalbaseLearningOutcomeApplicationTest.BROKER.getEmbeddedKafka()
+                .getPartitionsPerTopic());
 
   }
 
@@ -156,7 +161,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
@@ -214,7 +220,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPut.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
@@ -276,7 +283,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
@@ -328,7 +336,8 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertFalse(optionalLearningOutcomeDeleted.isPresent());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
+    ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
+        .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = new ObjectMapper()
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertEquals(learningOutcomeDomainEvent.getEventType(),
