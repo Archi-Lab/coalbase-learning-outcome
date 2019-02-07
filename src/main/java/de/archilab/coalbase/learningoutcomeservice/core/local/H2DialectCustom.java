@@ -9,7 +9,7 @@ public class H2DialectCustom extends H2Dialect {
 
   public H2DialectCustom() {
     super();
-    this.registerColumnType(Types.BINARY, "bytea");
+    this.registerColumnType(Types.BINARY, "uuid");
     this.registerColumnType(Types.BINARY, "varbinary");
   }
 }
