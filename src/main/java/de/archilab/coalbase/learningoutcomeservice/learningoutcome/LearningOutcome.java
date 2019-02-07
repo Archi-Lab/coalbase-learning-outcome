@@ -1,13 +1,15 @@
 package de.archilab.coalbase.learningoutcomeservice.learningoutcome;
 
 
-import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+
+import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,7 +37,7 @@ public class LearningOutcome extends EntityWithUniqueId<LearningOutcome> {
 
   public void addTool(Tool tool) {
     if (this.tools == null) {
-      this.tools = new ArrayList();
+      this.tools = new ArrayList<>();
     }
     this.tools.add(tool);
   }
