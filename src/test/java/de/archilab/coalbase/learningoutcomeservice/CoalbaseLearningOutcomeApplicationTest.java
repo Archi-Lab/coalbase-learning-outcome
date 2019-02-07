@@ -106,31 +106,31 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   @Test
   public void notWhiteListedURLWithoutAuthenticationShouldFailWith401() throws Exception {
-    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(401));
+    this.mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(401));
   }
 
   @Test
   @WithMockUser(username = "testAdmin", roles = {"coalbase_admin"})
   public void notWhiteListedURLWithAdminRoleShouldSucceedWith200() throws Exception {
-    mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
+    this.mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
   }
 
   @Test
   @WithMockUser(username = "testuser", roles = ("coalbase_user"))
   public void getAuthorizedHelloWorldWithNotSufficientRolesShouldFail403() throws Exception {
-    mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
+    this.mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
   }
 
   @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void createLearningOutcome() throws Exception {
 
-    LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
+    LearningOutcome learningOutcomeToPost = this.buildSampleLearningOutcome();
 
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPost);
 
-    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
+    this.mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPost.getCompetence().getAction())))
@@ -143,7 +143,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPost.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
-    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
+    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -168,24 +168,24 @@ public class CoalbaseLearningOutcomeApplicationTest {
   @Test
   public void createLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
 
-    LearningOutcome learningOutcomeToPost = buildSampleLearningOutcome();
+    LearningOutcome learningOutcomeToPost = this.buildSampleLearningOutcome();
 
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPost);
 
-    mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
+    this.mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
   }
 
   @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void putLearningOutcome() throws Exception {
-    LearningOutcome learningOutcomeToPut = buildSampleLearningOutcome();
+    LearningOutcome learningOutcomeToPut = this.buildSampleLearningOutcome();
 
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
+    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
@@ -199,7 +199,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPut.getPurpose().getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
-    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) learningOutcomeRepository
+    List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
         .findAll();
     assertFalse(learningOutcomes.isEmpty());
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -225,12 +225,12 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   @Test
   public void putLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
-    LearningOutcome learningOutcomeToPut = buildSampleLearningOutcome();
+    LearningOutcome learningOutcomeToPut = this.buildSampleLearningOutcome();
 
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
+    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
   }
@@ -259,7 +259,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String url = "/learningOutcomes/" + identifier.toIdString();
 
-    mvc.perform(
+    this.mvc.perform(
         patch(url).content(objectMapper.writeValueAsString(learningOutcome)).with(csrf())
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(200))
         .andExpect(
@@ -321,7 +321,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     assertNotNull(learningOutcome);
 
     String url = "/learningOutcomes/" + identifier.toIdString();
-    mvc.perform(delete(url).with(csrf())).andExpect(status().isNoContent());
+    this.mvc.perform(delete(url).with(csrf())).andExpect(status().isNoContent());
 
     Optional<LearningOutcome> optionalLearningOutcomeDeleted = this.learningOutcomeRepository
         .findById(identifier);
@@ -339,7 +339,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
   @Test
   public void deleteLearningOutcomeWithoutAuthenticationShouldFail() throws Exception {
-    mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(401));
+    this.mvc.perform(delete("learningOutcomes/1").with(csrf())).andExpect(status().is(401));
   }
 
   @Test
@@ -356,7 +356,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     String url = "/learningOutcomes/" + identifier.toIdString();
 
-    mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
+    this.mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$.competence.action", is(learningOutcome.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
@@ -380,7 +380,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     String url = "/learningOutcomes/";
 
-    mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
+    this.mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$._embedded.learningOutcomes[0].competence.action",
             is(learningOutcomes.get(0).getCompetence().getAction())))
@@ -408,7 +408,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   private UniqueId<LearningOutcome> createLearningOutcomeToRepo() {
-    final LearningOutcome learningOutcome = buildSampleLearningOutcome();
+    final LearningOutcome learningOutcome = this.buildSampleLearningOutcome();
     this.learningOutcomeRepository.save(learningOutcome);
     return learningOutcome.getId();
   }
