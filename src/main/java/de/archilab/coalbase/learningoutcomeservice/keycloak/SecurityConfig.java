@@ -47,10 +47,15 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   private static final String SEMESTER_ITEM_RESOURCE = "/semesters/*";
   private static final String SEMESTER_ASSOCIATION_RESOURCE = "/semesters/*/**";
 
+
+  @Autowired
+  private CustomCorsConfiguration customCorsConfiguration;
+
+
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) {
     KeycloakAuthenticationProvider keycloakAuthenticationProvider
-        = keycloakAuthenticationProvider();
+        = this.keycloakAuthenticationProvider();
     keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
     auth.authenticationProvider(keycloakAuthenticationProvider);
   }
@@ -71,8 +76,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity httpSecurity) throws Exception {
     super.configure(httpSecurity);
     httpSecurity
-        .cors()
+        .cors().configurationSource(this.customCorsConfiguration.corsConfigurationSource())
         .and()
+
         // Possible security issue! Take a look into this!
         .csrf().disable()
         // Needed for H2 console. Possible security issue!
