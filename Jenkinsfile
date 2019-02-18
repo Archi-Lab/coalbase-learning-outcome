@@ -56,11 +56,52 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('Maven Build') {
+                    steps {
+                        updateGitlabCommitStatus name: "Building", state: "running"
+
+                         sh "mvn clean package -Dmaven.test.skip=true"
+                    }
+                    post {
+                        success {
+                            updateGitlabCommitStatus name: "Building", state: "success"
+                        }
+                        failure {
+                            updateGitlabCommitStatus name: "Building", state: "failed"
+                        }
+                        unstable {
+                            updateGitlabCommitStatus name: "Building", state: "success"
+                        }
+                    }
+                }
+        stage('Docker build Dev') {
+                    steps {
+                        updateGitlabCommitStatus name: "Building", state: "running"
+
+                        sh "docker build -t docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome-dev -f src/main/docker/Dockerfile-dev ."
+                        sh "docker tag docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome-dev docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome-dev:${env.BUILD_ID}"
+                        script {
+                            docker.withRegistry('https://docker.nexus.archi-lab.io//', 'archilab-nexus-jenkins-user') {
+                                sh "docker push docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome"
+                            }
+                        }
+                    }
+                    post {
+                        success {
+                            updateGitlabCommitStatus name: "Building", state: "success"
+                        }
+                        failure {
+                            updateGitlabCommitStatus name: "Building", state: "failed"
+                        }
+                        unstable {
+                            updateGitlabCommitStatus name: "Building", state: "success"
+                        }
+                    }
+                }
+        stage('Docker build Production') {
             steps {
                 updateGitlabCommitStatus name: "Building", state: "running"
 
-                sh "mvn clean package -Dmaven.test.skip=true"
                 sh "docker build -t docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome -f src/main/docker/Dockerfile ."
                 sh "docker tag docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${env.BUILD_ID}"
                 script {
