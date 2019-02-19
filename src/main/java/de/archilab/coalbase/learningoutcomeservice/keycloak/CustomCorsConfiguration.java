@@ -14,10 +14,13 @@ public class CustomCorsConfiguration {
 
   private final String allowedHeaders;
 
+  private final String allowedMethods;
+
   public CustomCorsConfiguration(@Value("${security.cors.allowed-origins}") String allowedOrigins,
-      @Value("${security.cors.allowed-headers}") String allowedHeaders) {
+      @Value("${security.cors.allowed-headers}") String allowedHeaders, @Value("${security.cors.allowed-methods}") String allowedMethods) {
     this.allowedOrigins = allowedOrigins;
     this.allowedHeaders = allowedHeaders;
+    this.allowedMethods = allowedMethods;
   }
 
 
@@ -29,6 +32,9 @@ public class CustomCorsConfiguration {
     }
     for (final String header : this.allowedHeaders.split(",")) {
       corsConfiguration.addAllowedHeader(header);
+    }
+    for (final String method : this.allowedMethods.split(",")) {
+      corsConfiguration.addAllowedMethod(method);
     }
     corsConfiguration.addAllowedOrigin("*");
     configurationSource.registerCorsConfiguration("/*", corsConfiguration);
