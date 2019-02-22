@@ -26,7 +26,8 @@ public class UniqueId<T> implements Serializable {
     }
   }
 
-  public String toIdString() {
+  @Override
+  public String toString() {
     return this.uuid.toString();
   }
 

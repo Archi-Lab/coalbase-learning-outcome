@@ -14,7 +14,7 @@ public class EntityWithUniqueIdConverter implements BackendIdConverter {
 
   @Override
   public String toRequestId(Serializable serializable, Class<?> aClass) {
-    return ((UniqueId) serializable).toIdString();
+    return ((UniqueId) serializable).toString();
   }
 
   @Override
