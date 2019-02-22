@@ -1,6 +1,6 @@
 package de.archilab.coalbase.learningoutcomeservice.kafka;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +36,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@EmbeddedKafka(partitions = 1,
-    topics = {"test-topic"})
+@EmbeddedKafka(partitions = 1, topics = {"test-topic"})
 public class KafkaMessageProducerTest {
 
   private static final String TOPIC = "test-topic";
@@ -47,8 +46,8 @@ public class KafkaMessageProducerTest {
 
   @Test
   public void sendEvent() throws JsonProcessingException, InterruptedException {
-    Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testT", "false",
-        this.embeddedKafka);
+    Map<String, Object> consumerProps = KafkaTestUtils
+        .consumerProps("testT", "false", this.embeddedKafka);
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
@@ -68,12 +67,10 @@ public class KafkaMessageProducerTest {
       public void onMessage(ConsumerRecord<String, String> record) {
         records.add(record);
       }
-
     });
     container.setBeanName("templateTests");
     container.start();
-    ContainerTestUtils
-        .waitForAssignment(container, this.embeddedKafka.getPartitionsPerTopic());
+    ContainerTestUtils.waitForAssignment(container, this.embeddedKafka.getPartitionsPerTopic());
     Map<String, Object> senderProps =
         KafkaTestUtils.senderProps(this.embeddedKafka.getBrokersAsString());
     senderProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -95,10 +92,10 @@ public class KafkaMessageProducerTest {
 
     ConsumerRecord<String, String> record = records.poll(10, TimeUnit.SECONDS);
 
-    assertEquals(record.key(),
-        learningOutcomeDomainEvent.getEventID().toString());
+    assertThat(record.key()).isEqualTo(learningOutcomeDomainEvent.getEventID().toString());
 
-    assertEquals(record.value(), objectMapper.writeValueAsString(learningOutcomeDomainEvent));
+    assertThat(record.value())
+        .isEqualTo(objectMapper.writeValueAsString(learningOutcomeDomainEvent));
   }
 
 }

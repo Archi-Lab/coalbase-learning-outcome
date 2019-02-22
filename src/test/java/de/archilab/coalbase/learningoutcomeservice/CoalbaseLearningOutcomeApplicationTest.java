@@ -1,12 +1,8 @@
 package de.archilab.coalbase.learningoutcomeservice;
 
-
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,6 +13,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -41,26 +54,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -68,12 +61,16 @@ import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
 public class CoalbaseLearningOutcomeApplicationTest {
 
   private static final String TOPIC = "learning-outcome";
+
   @ClassRule
   public final static EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
       false, CoalbaseLearningOutcomeApplicationTest.TOPIC);
+
   private static BlockingQueue<ConsumerRecord<String, String>> records;
+
   @Autowired
   private MockMvc mvc;
+
   @Autowired
   private LearningOutcomeRepository learningOutcomeRepository;
 
@@ -97,8 +94,10 @@ public class CoalbaseLearningOutcomeApplicationTest {
     KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
         cf, containerProperties);
 
-    records = new LinkedBlockingQueue<>();
-    container.setupMessageListener((MessageListener<String, String>) record -> records.add(record));
+    CoalbaseLearningOutcomeApplicationTest.records = new LinkedBlockingQueue<>();
+    container.setupMessageListener(
+        (MessageListener<String, String>) record -> CoalbaseLearningOutcomeApplicationTest.records
+            .add(record));
 
     container.setBeanName("templateTests");
     container.start();
@@ -150,25 +149,28 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
         .findAll();
-    assertFalse(learningOutcomes.isEmpty());
+    assertThat(learningOutcomes.isEmpty()).isFalse();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(learningOutcomes.get(0).getId());
-    assertTrue(optionalLearningOutcome.isPresent());
+    assertThat(optionalLearningOutcome.isPresent()).isTrue();
     LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
-    assertEquals(savedLearningOutcome.getCompetence(), learningOutcomeToPost.getCompetence());
-    assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPost.getTools().get(0));
-    assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPost.getTools().get(1));
-    assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPost.getPurpose());
+    assertThat(savedLearningOutcome.getCompetence())
+        .isEqualTo(learningOutcomeToPost.getCompetence());
+    assertThat(savedLearningOutcome.getTools().get(1))
+        .isEqualTo(learningOutcomeToPost.getTools().get(1));
+    assertThat(savedLearningOutcome.getTools().get(0))
+        .isEqualTo(learningOutcomeToPost.getTools().get(0));
+    assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPost.getPurpose());
 
     /*Test kafka message */
     ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(),
-        LearningOutcomeEventType.CREATED.name());
-    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
-        learningOutcomes.get(0).getId());
+    assertThat(learningOutcomeDomainEvent.getEventType())
+        .isEqualTo(LearningOutcomeEventType.CREATED.name());
+    assertThat(learningOutcomeDomainEvent.getLearningOutcomeIdentifier())
+        .isEqualTo(learningOutcomes.get(0).getId());
   }
 
   @Test
@@ -191,7 +193,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
+    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
@@ -207,27 +209,29 @@ public class CoalbaseLearningOutcomeApplicationTest {
 
     List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
         .findAll();
-    assertFalse(learningOutcomes.isEmpty());
+    assertThat(learningOutcomes.isEmpty()).isFalse();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(learningOutcomes.get(0).getId());
-    assertTrue(optionalLearningOutcome.isPresent());
+    assertThat(optionalLearningOutcome.isPresent()).isTrue();
     LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
-    assertEquals(savedLearningOutcome.getId(),
-        learningOutcomeToPut.getId());
-    assertEquals(savedLearningOutcome.getCompetence(), learningOutcomeToPut.getCompetence());
-    assertEquals(savedLearningOutcome.getTools().get(0), learningOutcomeToPut.getTools().get(0));
-    assertEquals(savedLearningOutcome.getTools().get(1), learningOutcomeToPut.getTools().get(1));
-    assertEquals(savedLearningOutcome.getPurpose(), learningOutcomeToPut.getPurpose());
+    assertThat(savedLearningOutcome.getId()).isEqualTo(learningOutcomeToPut.getId());
+    assertThat(savedLearningOutcome.getCompetence())
+        .isEqualTo(learningOutcomeToPut.getCompetence());
+    assertThat(savedLearningOutcome.getTools().get(0))
+        .isEqualTo(learningOutcomeToPut.getTools().get(0));
+    assertThat(savedLearningOutcome.getTools().get(1))
+        .isEqualTo(learningOutcomeToPut.getTools().get(1));
+    assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPut.getPurpose());
 
     /*Test kafka message */
     ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(),
-        LearningOutcomeEventType.CREATED.name());
-    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
-        savedLearningOutcome.getId());
+    assertThat(learningOutcomeDomainEvent.getEventType())
+        .isEqualTo(LearningOutcomeEventType.CREATED.name());
+    assertThat(learningOutcomeDomainEvent.getLearningOutcomeIdentifier())
+        .isEqualTo(savedLearningOutcome.getId());
   }
 
   @Test
@@ -237,7 +241,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     String json = objectMapper.writeValueAsString(learningOutcomeToPut);
 
-    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toIdString())
+    this.mvc.perform(put("/learningOutcomes/" + learningOutcomeToPut.getId().toString())
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(401));
   }
@@ -249,14 +253,13 @@ public class CoalbaseLearningOutcomeApplicationTest {
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
 
-    assertTrue(optionalLearningOutcome.isPresent());
+    assertThat(optionalLearningOutcome.isPresent()).isTrue();
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
-    assertNotNull(learningOutcome);
+    assertThat(learningOutcome).isNotNull();
 
     Competence competence = new Competence("Action", TaxonomyLevel.ANALYSIS);
     learningOutcome.setCompetence(competence);
 
-    //learningOutcome.getTools().stream().forEach(learningOutcome::removeTool);
     Tool tool = new Tool("Tool");
     learningOutcome.addTool(tool);
 
@@ -264,7 +267,7 @@ public class CoalbaseLearningOutcomeApplicationTest {
     learningOutcome.setPurpose(purpose);
 
     ObjectMapper objectMapper = new ObjectMapper();
-    String url = "/learningOutcomes/" + identifier.toIdString();
+    String url = "/learningOutcomes/" + identifier.toString();
 
     this.mvc.perform(
         patch(url).content(objectMapper.writeValueAsString(learningOutcome)).with(csrf())
@@ -287,10 +290,10 @@ public class CoalbaseLearningOutcomeApplicationTest {
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(),
-        LearningOutcomeEventType.UPDATED.name());
-    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
-        learningOutcome.getId());
+    assertThat(learningOutcomeDomainEvent.getEventType())
+        .isEqualTo(LearningOutcomeEventType.UPDATED.name());
+    assertThat(learningOutcomeDomainEvent.getLearningOutcomeIdentifier())
+        .isEqualTo(learningOutcome.getId());
   }
 
 /*  @Test
@@ -324,26 +327,26 @@ public class CoalbaseLearningOutcomeApplicationTest {
     UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
-    assertTrue(optionalLearningOutcome.isPresent());
+    assertThat(optionalLearningOutcome.isPresent()).isTrue();
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
-    assertNotNull(learningOutcome);
+    assertThat(learningOutcome).isNotNull();
 
-    String url = "/learningOutcomes/" + identifier.toIdString();
+    String url = "/learningOutcomes/" + identifier.toString();
     this.mvc.perform(delete(url).with(csrf())).andExpect(status().isNoContent());
 
     Optional<LearningOutcome> optionalLearningOutcomeDeleted = this.learningOutcomeRepository
         .findById(identifier);
-    assertFalse(optionalLearningOutcomeDeleted.isPresent());
+    assertThat(optionalLearningOutcomeDeleted.isPresent()).isFalse();
 
     /*Test kafka message */
     ConsumerRecord<String, String> record = CoalbaseLearningOutcomeApplicationTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = new ObjectMapper()
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
-    assertEquals(learningOutcomeDomainEvent.getEventType(),
-        LearningOutcomeEventType.DELETED.name());
-    assertEquals(learningOutcomeDomainEvent.getLearningOutcomeIdentifier(),
-        learningOutcome.getId());
+    assertThat(learningOutcomeDomainEvent.getEventType())
+        .isEqualTo(LearningOutcomeEventType.DELETED.name());
+    assertThat(learningOutcomeDomainEvent.getLearningOutcomeIdentifier())
+        .isEqualTo(learningOutcome.getId());
   }
 
   @Test
@@ -358,12 +361,11 @@ public class CoalbaseLearningOutcomeApplicationTest {
     UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
-
-    assertTrue(optionalLearningOutcome.isPresent());
+    assertThat(optionalLearningOutcome.isPresent()).isTrue();
     LearningOutcome learningOutcome = optionalLearningOutcome.orElse(null);
-    assertNotNull(learningOutcome);
+    assertThat(learningOutcome).isNotNull();
 
-    String url = "/learningOutcomes/" + identifier.toIdString();
+    String url = "/learningOutcomes/" + identifier.toString();
 
     this.mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
