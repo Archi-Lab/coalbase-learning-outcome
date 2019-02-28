@@ -2,6 +2,7 @@ package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
 import javax.persistence.Entity;
 
+import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class LearningSpace {
+public class LearningSpace extends EntityWithUniqueId<LearningSpace> {
 
   @NonNull
   private String title;
