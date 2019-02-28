@@ -6,6 +6,6 @@ public class AggregateLearningSpaceTest {
 
   @Test
   public void createLearningSpace() {
-
+    // Todo test the whole aggregate
   }
 }
