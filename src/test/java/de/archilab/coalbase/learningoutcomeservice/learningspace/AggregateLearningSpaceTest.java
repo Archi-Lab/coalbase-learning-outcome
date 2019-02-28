@@ -1,7 +1,10 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.BeforeClass;
@@ -35,6 +38,8 @@ public class AggregateLearningSpaceTest {
   @Autowired
   private MockMvc mvc;
 
+  @Autowired
+  private LearningSpaceRepository learningSpaceRepository;
 
   @BeforeClass
   public static void createInitalLearningSpace() {
@@ -54,8 +59,24 @@ public class AggregateLearningSpaceTest {
         .with(csrf())
         .content(learningSpaceAsJson)
         .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().is(201));
+        .andExpect(status().is(201))
+        .andExpect(
+            jsonPath("$.title", is(learningSpaceToPost.getTitle())))
+        .andExpect(
+            jsonPath("$._links.learningOutcome", notNullValue()))
+        .andExpect(
+            jsonPath("$._links.requirement", notNullValue()))
+        .andExpect(
+            jsonPath("$._links.self", notNullValue())
+        );
 
+    // TODO test that the learningSpace is persisted
+    // current Problem -> LearningOutcome uuid is null
+    /*
+    List<LearningSpace> learningSpaces = (List<LearningSpace>) this.learningSpaceRepository
+        .findAll();
+    assertFalse(learningSpaces.isEmpty());
+    */
   }
 
   private LearningSpace buildSampleLearningSpace() {
