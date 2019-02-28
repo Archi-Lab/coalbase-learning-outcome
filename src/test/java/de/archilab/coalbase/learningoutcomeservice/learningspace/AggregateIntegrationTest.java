@@ -1,5 +1,5 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
-public class IntegrationTest {
+public class AggregateIntegrationTest {
   // Fill with integration tests for aggregate learningSpace
 }

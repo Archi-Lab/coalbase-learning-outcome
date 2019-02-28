@@ -53,12 +53,13 @@ import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class IntegrationTest {
+public class AggregateIntegrationTest {
+
   private static final String TOPIC = "learning-outcome";
 
   @ClassRule
   public final static EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
-      false, IntegrationTest.TOPIC);
+      false, AggregateIntegrationTest.TOPIC);
 
   private static BlockingQueue<ConsumerRecord<String, String>> records;
 
@@ -71,11 +72,11 @@ public class IntegrationTest {
   @BeforeClass
   public static void setup() {
     System.setProperty("spring.kafka.bootstrap-servers",
-        IntegrationTest.BROKER.getEmbeddedKafka().getBrokersAsString());
+        AggregateIntegrationTest.BROKER.getEmbeddedKafka().getBrokersAsString());
 
     Map<String, Object> consumerProps = KafkaTestUtils
         .consumerProps("testT", "false",
-            IntegrationTest.BROKER.getEmbeddedKafka());
+            AggregateIntegrationTest.BROKER.getEmbeddedKafka());
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
@@ -83,21 +84,21 @@ public class IntegrationTest {
         consumerProps);
 
     ContainerProperties containerProperties = new ContainerProperties(
-        IntegrationTest.TOPIC);
+        AggregateIntegrationTest.TOPIC);
 
     KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
         cf, containerProperties);
 
-    IntegrationTest.records = new LinkedBlockingQueue<>();
+    AggregateIntegrationTest.records = new LinkedBlockingQueue<>();
     container.setupMessageListener(
-        (MessageListener<String, String>) record -> IntegrationTest.records
+        (MessageListener<String, String>) record -> AggregateIntegrationTest.records
             .add(record));
 
     container.setBeanName("templateTests");
     container.start();
     ContainerTestUtils
         .waitForAssignment(container,
-            IntegrationTest.BROKER.getEmbeddedKafka()
+            AggregateIntegrationTest.BROKER.getEmbeddedKafka()
                 .getPartitionsPerTopic());
 
   }
@@ -157,7 +158,7 @@ public class IntegrationTest {
     assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPost.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = IntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
@@ -218,7 +219,7 @@ public class IntegrationTest {
     assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPut.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = IntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
@@ -280,7 +281,7 @@ public class IntegrationTest {
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = IntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
@@ -333,7 +334,7 @@ public class IntegrationTest {
     assertThat(optionalLearningOutcomeDeleted.isPresent()).isFalse();
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = IntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = new ObjectMapper()
         .readValue(record.value(), LearningOutcomeDomainEvent.class);

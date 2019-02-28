@@ -44,7 +44,15 @@ public class LearningSpaceTest {
   public void createLearningSpaceWithRequirment() {
     LearningSpace learningSpaceWithoutRequirment = new LearningSpace("name", learningOutcome);
 
-    // TODO create Learning Space with Requirment
-    // TODO Test set and get Requirment
+    LearningSpace learningSpace = new LearningSpace("secondName", learningOutcome,
+        learningSpaceWithoutRequirment);
+    assertNotNull(learningSpace);
+
+    assertEquals(learningSpace.getRequirement(), learningSpaceWithoutRequirment);
+
+    LearningSpace newLearningSpaceWithoutRequirment = new LearningSpace("newName",
+        secondLearningOutcome);
+    learningSpace.setRequirement(newLearningSpaceWithoutRequirment);
+    assertEquals(learningSpace.getRequirement(), newLearningSpaceWithoutRequirment);
   }
 }
