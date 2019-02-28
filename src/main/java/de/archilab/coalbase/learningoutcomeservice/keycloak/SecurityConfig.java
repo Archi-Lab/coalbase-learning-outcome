@@ -121,51 +121,51 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
   private void restrictAllChangesToProfessor(String resource, HttpSecurity httpSecurity)
       throws Exception {
-    String list_resource = "/" + resource;
-    String item_resource = list_resource + "/*";
-    String association_resource = item_resource + "/**";
+    String listResource = "/" + resource;
+    String itemResource = listResource + "/*";
+    String associationResource = itemResource + "/**";
     httpSecurity
         .authorizeRequests()
         //LearningOutcome (Standard endpoints provided by SDR)
 
         //ListResource
-        .antMatchers(HttpMethod.OPTIONS, list_resource)
+        .antMatchers(HttpMethod.OPTIONS, listResource)
         .permitAll()
 
-        .antMatchers(HttpMethod.GET, list_resource)
+        .antMatchers(HttpMethod.GET, listResource)
         .permitAll()
 
-        .antMatchers(HttpMethod.HEAD, list_resource)
+        .antMatchers(HttpMethod.HEAD, listResource)
         .permitAll()
 
-        .antMatchers(HttpMethod.POST, list_resource)
+        .antMatchers(HttpMethod.POST, listResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
         //ItemResource
-        .antMatchers(HttpMethod.GET, item_resource)
+        .antMatchers(HttpMethod.GET, itemResource)
         .permitAll()
 
-        .antMatchers(HttpMethod.HEAD, item_resource)
+        .antMatchers(HttpMethod.HEAD, itemResource)
         .permitAll()
 
-        .antMatchers(HttpMethod.PUT, item_resource)
+        .antMatchers(HttpMethod.PUT, itemResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
 
-        .antMatchers(HttpMethod.PATCH, item_resource)
+        .antMatchers(HttpMethod.PATCH, itemResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
 
-        .antMatchers(HttpMethod.DELETE, item_resource)
+        .antMatchers(HttpMethod.DELETE, itemResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
         //AssociationResource
-        .antMatchers(HttpMethod.GET, association_resource)
+        .antMatchers(HttpMethod.GET, associationResource)
         .permitAll()
 
-        .antMatchers(HttpMethod.PUT, association_resource)
+        .antMatchers(HttpMethod.PUT, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
 
-        .antMatchers(HttpMethod.POST, association_resource)
+        .antMatchers(HttpMethod.POST, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
 
-        .antMatchers(HttpMethod.DELETE, association_resource)
+        .antMatchers(HttpMethod.DELETE, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN);
   }
 }
