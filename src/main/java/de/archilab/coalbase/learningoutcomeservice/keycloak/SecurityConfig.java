@@ -38,19 +38,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   private static final String ROLE_STUDENT = "coalbase_student";
   private static final String ROLE_PROFESSOR = "coalbase_professor";
   private static final String ROLE_ADMIN = "coalbase_admin";
-  private static final String LO_LIST_RESOURCE = "/learningOutcomes";
-  private static final String LO_ITEM_RESOURCE = "/learningOutcomes/*";
-  private static final String LO_ASSOCIATION_RESOURCE = "/learningOutcomes/*/**";
   private static final String H2_CONSOLE = "/h2-console";
   private static final String H2_CONSOLE_SUB = "/h2-console/*";
-  private static final String SEMESTER_LIST_RESOURCE = "/semesters";
-  private static final String SEMESTER_ITEM_RESOURCE = "/semesters/*";
-  private static final String SEMESTER_ASSOCIATION_RESOURCE = "/semesters/*/**";
-
 
   @Autowired
   private CustomCorsConfiguration customCorsConfiguration;
-
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) {
@@ -75,6 +67,15 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception {
     super.configure(httpSecurity);
+    this.generalHttpSecuritySettings(httpSecurity);
+    this.whitelistHttpSecuritySettings(httpSecurity);
+    this.restrictAllChangesToProfessor("learningOutcomes", httpSecurity);
+    this.restrictAllChangesToProfessor("learningSpaces", httpSecurity);
+    this.restrictAllChangesToProfessor("semesters", httpSecurity);
+    this.fallbackHttpSecuritySettings(httpSecurity);
+  }
+
+  private void generalHttpSecuritySettings(HttpSecurity httpSecurity) throws Exception {
     httpSecurity
         .cors().configurationSource(this.customCorsConfiguration.corsConfigurationSource())
         .and()
@@ -85,8 +86,14 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .headers().frameOptions().sameOrigin()
 
         .and()
-        .authorizeRequests()
+        .authorizeRequests();
 
+
+  }
+
+  private void whitelistHttpSecuritySettings(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
+        .authorizeRequests()
         //WhiteList local
         // H2-Console
         .antMatchers(SecurityConfig.H2_CONSOLE, SecurityConfig.H2_CONSOLE_SUB)
@@ -103,94 +110,62 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .permitAll()
 
         .antMatchers("/studyRooms/**")
-        .permitAll()
+        .permitAll();
+  }
 
-        .antMatchers("/learningSpaces")
-        .permitAll()
-
-        .antMatchers("/learningSpaces/**")
-        .permitAll()
-
-        //LearningOutcome (Standard endpoints provided by SDR)
-        //ListResource
-        .antMatchers(HttpMethod.OPTIONS, SecurityConfig.LO_LIST_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.GET, SecurityConfig.LO_LIST_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.HEAD, SecurityConfig.LO_LIST_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.POST, SecurityConfig.LO_LIST_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-        //ItemResource
-        .antMatchers(HttpMethod.GET, SecurityConfig.LO_ITEM_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.HEAD, SecurityConfig.LO_ITEM_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.PUT, SecurityConfig.LO_ITEM_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.PATCH, SecurityConfig.LO_ITEM_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.DELETE, SecurityConfig.LO_ITEM_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-        //AssociationResource
-        .antMatchers(HttpMethod.GET, SecurityConfig.LO_ASSOCIATION_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.PUT, SecurityConfig.LO_ASSOCIATION_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.POST, SecurityConfig.LO_ASSOCIATION_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.DELETE, SecurityConfig.LO_ASSOCIATION_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
-        //Semester
-        //ListResource
-        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_LIST_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.HEAD, SecurityConfig.SEMESTER_LIST_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.POST, SecurityConfig.SEMESTER_LIST_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-        //ItemResource
-        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_ITEM_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.HEAD, SecurityConfig.SEMESTER_ITEM_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.PUT, SecurityConfig.SEMESTER_ITEM_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.PATCH, SecurityConfig.SEMESTER_ITEM_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.DELETE, SecurityConfig.SEMESTER_ITEM_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-        //AssociationResource
-        .antMatchers(HttpMethod.GET, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
-        .permitAll()
-
-        .antMatchers(HttpMethod.PUT, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.POST, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-
-        .antMatchers(HttpMethod.DELETE, SecurityConfig.SEMESTER_ASSOCIATION_RESOURCE)
-        .hasAnyRole(SecurityConfig.ROLE_ADMIN)
-
-        // Fallback
+  private void fallbackHttpSecuritySettings(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
+        .authorizeRequests()
         .anyRequest().hasRole(SecurityConfig.ROLE_ADMIN);
+  }
+
+  private void restrictAllChangesToProfessor(String resource, HttpSecurity httpSecurity)
+      throws Exception {
+    String list_resource = "/" + resource;
+    String item_resource = list_resource + "/*";
+    String association_resource = item_resource + "/**";
+    httpSecurity
+        .authorizeRequests()
+        //LearningOutcome (Standard endpoints provided by SDR)
+
+        //ListResource
+        .antMatchers(HttpMethod.OPTIONS, list_resource)
+        .permitAll()
+
+        .antMatchers(HttpMethod.GET, list_resource)
+        .permitAll()
+
+        .antMatchers(HttpMethod.HEAD, list_resource)
+        .permitAll()
+
+        .antMatchers(HttpMethod.POST, list_resource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+        //ItemResource
+        .antMatchers(HttpMethod.GET, item_resource)
+        .permitAll()
+
+        .antMatchers(HttpMethod.HEAD, item_resource)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, item_resource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.PATCH, item_resource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, item_resource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+        //AssociationResource
+        .antMatchers(HttpMethod.GET, association_resource)
+        .permitAll()
+
+        .antMatchers(HttpMethod.PUT, association_resource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.POST, association_resource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
+        .antMatchers(HttpMethod.DELETE, association_resource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN);
   }
 }
