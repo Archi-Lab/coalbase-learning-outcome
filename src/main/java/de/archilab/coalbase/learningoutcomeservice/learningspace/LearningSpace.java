@@ -1,6 +1,7 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
@@ -25,6 +26,8 @@ public class LearningSpace extends EntityWithUniqueId<LearningSpace> {
   @NonNull
   private String title;
   @NonNull
+  @OneToOne(targetEntity = LearningOutcome.class)
   private LearningOutcome learningOutcome;
+  @OneToOne(targetEntity = LearningSpace.class)
   private LearningSpace requirement;
 }

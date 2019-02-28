@@ -53,13 +53,13 @@ import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class AggregateIntegrationTest {
+public class AggregateLearningOutcomeTest {
 
   private static final String TOPIC = "learning-outcome";
 
   @ClassRule
   public final static EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
-      false, AggregateIntegrationTest.TOPIC);
+      false, AggregateLearningOutcomeTest.TOPIC);
 
   private static BlockingQueue<ConsumerRecord<String, String>> records;
 
@@ -72,11 +72,11 @@ public class AggregateIntegrationTest {
   @BeforeClass
   public static void setup() {
     System.setProperty("spring.kafka.bootstrap-servers",
-        AggregateIntegrationTest.BROKER.getEmbeddedKafka().getBrokersAsString());
+        AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka().getBrokersAsString());
 
     Map<String, Object> consumerProps = KafkaTestUtils
         .consumerProps("testT", "false",
-            AggregateIntegrationTest.BROKER.getEmbeddedKafka());
+            AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka());
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
@@ -84,21 +84,21 @@ public class AggregateIntegrationTest {
         consumerProps);
 
     ContainerProperties containerProperties = new ContainerProperties(
-        AggregateIntegrationTest.TOPIC);
+        AggregateLearningOutcomeTest.TOPIC);
 
     KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
         cf, containerProperties);
 
-    AggregateIntegrationTest.records = new LinkedBlockingQueue<>();
+    AggregateLearningOutcomeTest.records = new LinkedBlockingQueue<>();
     container.setupMessageListener(
-        (MessageListener<String, String>) record -> AggregateIntegrationTest.records
+        (MessageListener<String, String>) record -> AggregateLearningOutcomeTest.records
             .add(record));
 
     container.setBeanName("templateTests");
     container.start();
     ContainerTestUtils
         .waitForAssignment(container,
-            AggregateIntegrationTest.BROKER.getEmbeddedKafka()
+            AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka()
                 .getPartitionsPerTopic());
 
   }
@@ -158,7 +158,7 @@ public class AggregateIntegrationTest {
     assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPost.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
@@ -219,7 +219,7 @@ public class AggregateIntegrationTest {
     assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPut.getPurpose());
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
@@ -281,7 +281,7 @@ public class AggregateIntegrationTest {
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
@@ -334,7 +334,7 @@ public class AggregateIntegrationTest {
     assertThat(optionalLearningOutcomeDeleted.isPresent()).isFalse();
 
     /*Test kafka message */
-    ConsumerRecord<String, String> record = AggregateIntegrationTest.records
+    ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = new ObjectMapper()
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
