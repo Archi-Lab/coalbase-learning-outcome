@@ -105,6 +105,12 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .antMatchers("/studyRooms/**")
         .permitAll()
 
+        .antMatchers("/learningSpaces")
+        .permitAll()
+
+        .antMatchers("/learningSpaces/**")
+        .permitAll()
+
         //LearningOutcome (Standard endpoints provided by SDR)
         //ListResource
         .antMatchers(HttpMethod.OPTIONS, SecurityConfig.LO_LIST_RESOURCE)
