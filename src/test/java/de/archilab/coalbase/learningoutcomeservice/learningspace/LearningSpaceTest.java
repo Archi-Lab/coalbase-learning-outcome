@@ -27,32 +27,75 @@ public class LearningSpaceTest {
 
   @Test
   public void createLearningSpace() {
+    LearningSpace learningSpace = new LearningSpace("name");
+    assertNotNull(learningSpace);
+
+    assertEquals(learningSpace.getTitle(), "name");
+  }
+
+  @Test
+  public void createLearningSpaceWithLearningOutcome() {
     LearningSpace learningSpace = new LearningSpace("name", learningOutcome);
     assertNotNull(learningSpace);
 
     assertEquals(learningSpace.getTitle(), "name");
     assertEquals(learningSpace.getLearningOutcome(), learningOutcome);
-
-    learningSpace.setTitle("newTitle");
-    assertEquals(learningSpace.getTitle(), "newTitle");
-
-    learningSpace.setLearningOutcome(secondLearningOutcome);
-    assertEquals(learningSpace.getLearningOutcome(), secondLearningOutcome);
   }
+
 
   @Test
   public void createLearningSpaceWithRequirment() {
+    LearningSpace learningSpaceWithoutRequirment = new LearningSpace("name");
+
+    LearningSpace learningSpace = new LearningSpace("secondName",
+        learningSpaceWithoutRequirment);
+    assertNotNull(learningSpace);
+
+    assertEquals(learningSpace.getRequirement(), learningSpaceWithoutRequirment);
+  }
+
+  @Test
+  public void createLearningSpaceWithRequirmentAndLearningOutcome() {
     LearningSpace learningSpaceWithoutRequirment = new LearningSpace("name", learningOutcome);
 
     LearningSpace learningSpace = new LearningSpace("secondName", learningOutcome,
         learningSpaceWithoutRequirment);
     assertNotNull(learningSpace);
 
+    assertEquals(learningSpace.getTitle(), "secondName");
+    assertEquals(learningSpace.getLearningOutcome(), learningOutcome);
+    assertEquals(learningSpace.getRequirement(), learningSpaceWithoutRequirment);
+  }
+
+  @Test
+  public void updateLearningOutcome() {
+    LearningSpace learningSpace = new LearningSpace("name", learningOutcome);
+    assertNotNull(learningSpace);
+
+    assertEquals(learningSpace.getLearningOutcome(), learningOutcome);
+    learningSpace.setLearningOutcome(secondLearningOutcome);
+    assertEquals(learningSpace.getLearningOutcome(), secondLearningOutcome);
+  }
+
+  @Test
+  public void updateRequirment() {
+    LearningSpace learningSpaceWithoutRequirment = new LearningSpace("name");
+    LearningSpace learningSpace = new LearningSpace("secondName",
+        learningSpaceWithoutRequirment);
+
     assertEquals(learningSpace.getRequirement(), learningSpaceWithoutRequirment);
 
-    LearningSpace newLearningSpaceWithoutRequirment = new LearningSpace("newName",
-        secondLearningOutcome);
+    LearningSpace newLearningSpaceWithoutRequirment = new LearningSpace("newName");
     learningSpace.setRequirement(newLearningSpaceWithoutRequirment);
     assertEquals(learningSpace.getRequirement(), newLearningSpaceWithoutRequirment);
+  }
+
+  @Test
+  public void updateTitle() {
+    LearningSpace learningSpace = new LearningSpace("name");
+
+    assertEquals(learningSpace.getTitle(), "name");
+    learningSpace.setTitle("newTitle");
+    assertEquals(learningSpace.getTitle(), "newTitle");
   }
 }

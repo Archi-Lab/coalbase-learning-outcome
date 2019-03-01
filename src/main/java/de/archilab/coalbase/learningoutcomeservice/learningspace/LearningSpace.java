@@ -26,6 +26,15 @@ public class LearningSpace extends EntityWithUniqueId<LearningSpace> {
   @OneToOne(targetEntity = LearningSpace.class)
   private LearningSpace requirement;
 
+  public LearningSpace(String title) {
+    this.title = title;
+  }
+
+  public LearningSpace(String title, LearningSpace requirement) {
+    this.title = title;
+    this.requirement = requirement;
+  }
+
   public LearningSpace(String title, LearningOutcome learningOutcome) {
     this.title = title;
     this.learningOutcome = learningOutcome;
