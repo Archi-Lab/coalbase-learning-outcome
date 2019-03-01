@@ -58,7 +58,7 @@ public class AggregateLearningOutcomeTest {
   private static final String TOPIC = "learning-outcome";
 
   @ClassRule
-  public final static EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
+  public static final EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1,
       false, AggregateLearningOutcomeTest.TOPIC);
 
   private static BlockingQueue<ConsumerRecord<String, String>> records;

@@ -57,7 +57,6 @@ public class AggregateLearningSpaceTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     String learningSpaceAsJsonString = objectMapper.writeValueAsString(learningSpaceToPost);
-    // TODO Set Learning Outcome url instead of Object in a better manner
     JSONObject jsonObject = new JSONObject(learningSpaceAsJsonString);
     jsonObject.put("learningOutcome",
         "learningOutcomes/" + learningSpaceToPost.getLearningOutcome()
