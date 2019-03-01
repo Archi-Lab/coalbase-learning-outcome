@@ -9,13 +9,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONObject;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.kafka.test.utils.ContainerTestUtils;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,10 +34,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.AggregateLearningOutcomeTest;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
@@ -40,6 +55,14 @@ import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
 @Transactional
 public class AggregateLearningSpaceTest {
 
+  private static final String TOPIC = "learning-space";
+
+  @ClassRule
+  public static final EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1, false,
+      AggregateLearningSpaceTest.TOPIC);
+
+  private static BlockingQueue<ConsumerRecord<String, String>> records;
+
   @Autowired
   private MockMvc mvc;
 
@@ -48,6 +71,40 @@ public class AggregateLearningSpaceTest {
 
   @Autowired
   private LearningOutcomeRepository learningOutcomeRepository;
+
+  // TODO add @BeforeClass when kafka works
+  public static void setupKafka() {
+    System.setProperty("spring.kafka.bootstrap-servers",
+        AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka().getBrokersAsString());
+
+    Map<String, Object> consumerProps = KafkaTestUtils
+        .consumerProps("testT", "false",
+            AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka());
+
+    consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+
+    DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(
+        consumerProps);
+
+    ContainerProperties containerProperties = new ContainerProperties(
+        AggregateLearningSpaceTest.TOPIC);
+
+    KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(
+        cf, containerProperties);
+
+    AggregateLearningSpaceTest.records = new LinkedBlockingQueue<>();
+    container.setupMessageListener(
+        (MessageListener<String, String>) record -> AggregateLearningSpaceTest.records
+            .add(record));
+
+    container.setBeanName("templateTests");
+    container.start();
+    ContainerTestUtils
+        .waitForAssignment(container,
+            AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka()
+                .getPartitionsPerTopic());
+
+  }
 
   @Test
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
