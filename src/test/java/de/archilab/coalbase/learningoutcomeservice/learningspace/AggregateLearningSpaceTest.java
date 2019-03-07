@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -54,7 +55,7 @@ import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@DirtiesContext
+@DirtiesContext(classMode = BEFORE_CLASS)
 @AutoConfigureMockMvc
 @Transactional
 public class AggregateLearningSpaceTest {

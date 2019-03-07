@@ -1,17 +1,8 @@
 package de.archilab.coalbase.learningoutcomeservice.kafka;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -34,8 +25,21 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeDomainEvent;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeEventType;
+
 @RunWith(SpringRunner.class)
-@DirtiesContext
+@DirtiesContext(classMode = BEFORE_CLASS)
 @EmbeddedKafka(partitions = 1, topics = {"test-topic"})
 public class KafkaMessageProducerTest {
 
