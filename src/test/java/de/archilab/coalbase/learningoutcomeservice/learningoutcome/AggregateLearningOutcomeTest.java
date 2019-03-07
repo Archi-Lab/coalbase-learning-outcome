@@ -311,8 +311,6 @@ public class AggregateLearningOutcomeTest {
   }
 
   @Test
-  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void getLearningOutcomeByUUID() throws Exception {
     UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -336,8 +334,6 @@ public class AggregateLearningOutcomeTest {
   }
 
   @Test
-  //THIS IS A WORKAROUND FOR NOW! THE TEST SHOULD NEED THIS AUTHORIZATION, IT SHOULDNT BE NECESSARY TO SAVE A LO TO THE REPO FIRST!
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void getLearningOutcomes() throws Exception {
     this.createLearningOutcomeToRepo();
     this.createLearningOutcomeToRepo();
