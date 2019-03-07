@@ -1,5 +1,6 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
@@ -13,6 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,10 +40,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.AggregateLearningOutcomeTest;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
@@ -72,14 +74,14 @@ public class AggregateLearningSpaceTest {
   @Autowired
   private LearningOutcomeRepository learningOutcomeRepository;
 
-  // TODO add @BeforeClass when kafka works
+  @BeforeClass
   public static void setupKafka() {
     System.setProperty("spring.kafka.bootstrap-servers",
-        AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka().getBrokersAsString());
+        AggregateLearningSpaceTest.BROKER.getEmbeddedKafka().getBrokersAsString());
 
     Map<String, Object> consumerProps = KafkaTestUtils
         .consumerProps("testT", "false",
-            AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka());
+            AggregateLearningSpaceTest.BROKER.getEmbeddedKafka());
 
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
@@ -101,7 +103,7 @@ public class AggregateLearningSpaceTest {
     container.start();
     ContainerTestUtils
         .waitForAssignment(container,
-            AggregateLearningOutcomeTest.BROKER.getEmbeddedKafka()
+            AggregateLearningSpaceTest.BROKER.getEmbeddedKafka()
                 .getPartitionsPerTopic());
 
   }
@@ -147,6 +149,17 @@ public class AggregateLearningSpaceTest {
     assertEquals(learningSpace.getTitle(), learningSpaceToPost.getTitle());
     assertEquals(learningSpace.getLearningOutcome(), learningSpaceToPost.getLearningOutcome());
     assertEquals(learningSpace.getRequirement(), learningSpaceToPost.getRequirement());
+
+
+    /*Test kafka message */
+    ConsumerRecord<String, String> record = AggregateLearningSpaceTest.records
+        .poll(10, TimeUnit.SECONDS);
+    LearningSpaceDomainEvent learningSpaceDomainEvent = objectMapper
+        .readValue(record.value(), LearningSpaceDomainEvent.class);
+    assertThat(learningSpaceDomainEvent.getEventType())
+        .isEqualTo(LearningSpaceEventType.CREATED.name());
+    assertThat(learningSpaceDomainEvent.getLearningSpaceIdentifier())
+        .isEqualTo(learningSpace.getId());
   }
 
   private LearningSpace buildSampleLearningSpaceWithRequirment() {
