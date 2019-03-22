@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.archilab.coalbase.learningoutcomeservice.learningspace.LearningSpace;
@@ -16,11 +17,37 @@ public class CourseTest {
 
   @Test
   public void createCourseTest() {
-    Course course = new Course(TITLE, DESCRIPTION, Arrays.asList(LEARNING_SPACE));
+    Course course = new Course(TITLE, DESCRIPTION, new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(course.getTitle()).isEqualTo(TITLE);
     assertThat(course.getLearningSpaces()).contains(LEARNING_SPACE);
   }
+
+  @Test
+  public void addLearningSpaceToCourse() {
+    Course course = new Course(TITLE, DESCRIPTION, null);
+
+    assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
+    assertThat(course.getTitle()).isEqualTo(TITLE);
+    assertThat(course.getLearningSpaces()).isNull();
+
+    course.addLearningSpace(LEARNING_SPACE);
+    assertThat(course.getLearningSpaces()).isNotNull();
+    assertThat(course.getLearningSpaces()).contains(LEARNING_SPACE);
+  }
+
+  @Test
+  public void removeLearningSpaceToCourse() {
+    Course course = new Course(TITLE, DESCRIPTION, new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
+
+    assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
+    assertThat(course.getTitle()).isEqualTo(TITLE);
+    assertThat(course.getLearningSpaces()).contains(LEARNING_SPACE);
+
+    course.removeLearningSpace(LEARNING_SPACE);
+    assertThat(course.getLearningSpaces()).isEmpty();
+  }
+
 
 }

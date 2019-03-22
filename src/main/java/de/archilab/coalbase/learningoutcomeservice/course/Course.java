@@ -1,7 +1,6 @@
 package de.archilab.coalbase.learningoutcomeservice.course;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -27,7 +26,7 @@ public class Course extends EntityWithUniqueId<Course> {
   private String description;
 
   @OneToMany(mappedBy = "id")
-  private List<LearningSpace> learningSpaces;
+  private ArrayList<LearningSpace> learningSpaces;
 
   public void addLearningSpace(LearningSpace learningSpace) {
     if (learningSpace != null) {
