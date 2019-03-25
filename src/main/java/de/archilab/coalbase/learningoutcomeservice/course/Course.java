@@ -30,7 +30,7 @@ public class Course extends EntityWithUniqueId<Course> {
   @OneToMany(mappedBy = "id")
   private List<LearningSpace> learningSpaces;
 
-  public void addLearningSpace(LearningSpace learningSpace) throws IllegalArgumentException {
+  public void addLearningSpace(LearningSpace learningSpace) {
     if (learningSpace != null) {
       if (this.learningSpaces == null) {
         this.learningSpaces = new ArrayList<>();
@@ -41,8 +41,7 @@ public class Course extends EntityWithUniqueId<Course> {
     }
   }
 
-  public void removeLearningSpace(LearningSpace learningSpace)
-      throws IllegalArgumentException, EmptyListException {
+  public void removeLearningSpace(LearningSpace learningSpace) {
     if (learningSpace != null) {
       if (this.learningSpaces != null && !this.learningSpaces.isEmpty()) {
         this.learningSpaces.remove(learningSpace);
