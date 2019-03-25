@@ -34,6 +34,7 @@ import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +55,7 @@ import de.archilab.coalbase.learningoutcomeservice.learningspace.LearningSpaceRe
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@DirtiesContext
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @AutoConfigureMockMvc
 @Transactional
 public class AggregateCourseTest {
