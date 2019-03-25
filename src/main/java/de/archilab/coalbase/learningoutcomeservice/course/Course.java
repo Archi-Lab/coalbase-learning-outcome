@@ -1,11 +1,13 @@
 package de.archilab.coalbase.learningoutcomeservice.course;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
 import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
+import de.archilab.coalbase.learningoutcomeservice.core.exceptions.EmptyListException;
 import de.archilab.coalbase.learningoutcomeservice.learningspace.LearningSpace;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,20 +28,29 @@ public class Course extends EntityWithUniqueId<Course> {
   private String description;
 
   @OneToMany(mappedBy = "id")
-  private ArrayList<LearningSpace> learningSpaces;
+  private List<LearningSpace> learningSpaces;
 
-  public void addLearningSpace(LearningSpace learningSpace) {
+  public void addLearningSpace(LearningSpace learningSpace) throws IllegalArgumentException {
     if (learningSpace != null) {
       if (this.learningSpaces == null) {
         this.learningSpaces = new ArrayList<>();
       }
       this.learningSpaces.add(learningSpace);
+    } else {
+      throw new IllegalArgumentException("given learningSpace is null");
     }
   }
 
-  public void removeLearningSpace(LearningSpace learningSpace) {
-    if (this.learningSpaces != null && !this.learningSpaces.isEmpty() && learningSpace != null) {
-      this.learningSpaces.remove(learningSpace);
+  public void removeLearningSpace(LearningSpace learningSpace)
+      throws IllegalArgumentException, EmptyListException {
+    if (learningSpace != null) {
+      if (this.learningSpaces != null && !this.learningSpaces.isEmpty()) {
+        this.learningSpaces.remove(learningSpace);
+      } else {
+        throw new EmptyListException("List of LearningSpaces is empty");
+      }
+    } else {
+      throw new IllegalArgumentException("given learningSpace is null");
     }
   }
 

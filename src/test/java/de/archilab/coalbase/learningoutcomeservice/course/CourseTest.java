@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.archilab.coalbase.learningoutcomeservice.core.exceptions.EmptyListException;
 import de.archilab.coalbase.learningoutcomeservice.learningspace.LearningSpace;
 
 public class CourseTest {
@@ -37,8 +38,19 @@ public class CourseTest {
     assertThat(course.getLearningSpaces()).contains(LEARNING_SPACE);
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void addEmptyLearningSpaceToCourse() {
+    Course course = new Course(TITLE, DESCRIPTION, null);
+
+    assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
+    assertThat(course.getTitle()).isEqualTo(TITLE);
+    assertThat(course.getLearningSpaces()).isNull();
+
+    course.addLearningSpace(null);
+  }
+
   @Test
-  public void removeLearningSpaceToCourse() {
+  public void removeLearningSpaceFromCourse() {
     Course course = new Course(TITLE, DESCRIPTION, new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
@@ -47,6 +59,28 @@ public class CourseTest {
 
     course.removeLearningSpace(LEARNING_SPACE);
     assertThat(course.getLearningSpaces()).isEmpty();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void removeEmptyLearningSpaceFromCourse() {
+    Course course = new Course(TITLE, DESCRIPTION, new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
+
+    assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
+    assertThat(course.getTitle()).isEqualTo(TITLE);
+    assertThat(course.getLearningSpaces()).contains(LEARNING_SPACE);
+
+    course.removeLearningSpace(null);
+  }
+
+  @Test(expected = EmptyListException.class)
+  public void removeLearningSpaceFromEmptyCourse() {
+    Course course = new Course(TITLE, DESCRIPTION, null);
+
+    assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
+    assertThat(course.getTitle()).isEqualTo(TITLE);
+    assertThat(course.getLearningSpaces()).isNull();
+
+    course.removeLearningSpace(LEARNING_SPACE);
   }
 
 
