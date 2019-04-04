@@ -163,6 +163,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.PUT, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
 
+        .antMatchers(HttpMethod.PATCH, associationResource)
+        .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
         .antMatchers(HttpMethod.POST, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
 
