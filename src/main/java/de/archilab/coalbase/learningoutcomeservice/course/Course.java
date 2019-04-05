@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
@@ -28,7 +29,8 @@ public class Course extends EntityWithUniqueId<Course> {
   private String description;
   private String author;
 
-  @OneToMany(mappedBy = "id")
+  @OneToMany(targetEntity = LearningSpace.class)
+  @JoinColumn(name = "course_uuid")
   private List<LearningSpace> learningSpaces;
 
   public void addLearningSpace(LearningSpace learningSpace) {
