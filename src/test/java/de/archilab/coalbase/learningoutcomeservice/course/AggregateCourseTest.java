@@ -118,10 +118,10 @@ public class AggregateCourseTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
   public void createCourseExpectCreatedWithPost() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -160,12 +160,12 @@ public class AggregateCourseTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
   public void createCourseExpectCreateWithPut() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
-
+    course.setAuthor(AUTHOR);
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
     JSONObject courseJsonObject = new JSONObject(courseAsJsonString);
     JSONArray jsonArray = new JSONArray(Arrays.asList("learningSpaces/" + learningSpace.getId()));
@@ -204,12 +204,12 @@ public class AggregateCourseTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
   public void updateCourseExpectedUpdatedWithPatch() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
-
+    course.setAuthor(AUTHOR);
     this.courseRepository.save(course);
 
     LearningSpace learningSpace2 = this.createLearningSpace();
@@ -258,12 +258,12 @@ public class AggregateCourseTest {
 
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
   public void deleteCourseExpectDeleted() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
-
+    course.setAuthor(AUTHOR);
     this.courseRepository.save(course);
 
     this.mvc.perform(
@@ -293,7 +293,7 @@ public class AggregateCourseTest {
   @Test
   public void createCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -305,7 +305,7 @@ public class AggregateCourseTest {
   @Test
   public void updateCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -318,7 +318,7 @@ public class AggregateCourseTest {
   @Test
   public void updateCourseExpectNotAuthorizedWithPatch() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -331,9 +331,8 @@ public class AggregateCourseTest {
   @Test
   public void deleteCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
-
     this.courseRepository.save(course);
 
     this.mvc.perform(
@@ -351,9 +350,8 @@ public class AggregateCourseTest {
   @Test
   public void getCourseExpectSpecificCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
-
     this.courseRepository.save(course);
 
     this.mvc.perform(get("/courses/" + course.getId())).andExpect(status().isOk())
@@ -367,9 +365,9 @@ public class AggregateCourseTest {
   @WithMockUser(username = AUTHOR, roles = {"coalbase_student"})
   public void getCoursesExpectOneCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+    Course course = new Course(TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
-
+    course.setAuthor(AUTHOR);
     this.courseRepository.save(course);
 
     this.mvc.perform(get("/courses")).andExpect(status().isOk())

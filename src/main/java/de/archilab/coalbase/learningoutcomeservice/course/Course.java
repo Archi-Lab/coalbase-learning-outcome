@@ -13,7 +13,6 @@ import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import de.archilab.coalbase.learningoutcomeservice.core.exceptions.EmptyListException;
 import de.archilab.coalbase.learningoutcomeservice.learningspace.LearningSpace;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +20,6 @@ import lombok.ToString;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Setter
 @Getter
 @ToString(callSuper = true)
@@ -35,6 +33,12 @@ public class Course extends EntityWithUniqueId<Course> {
   @OneToMany(targetEntity = LearningSpace.class)
   @JoinColumn(name = "course_uuid")
   private List<LearningSpace> learningSpaces;
+
+  public Course(String title, String description, List<LearningSpace> learningSpaces) {
+    this.title = title;
+    this.description = description;
+    this.learningSpaces = learningSpaces;
+  }
 
   public void addLearningSpace(LearningSpace learningSpace) {
     if (learningSpace != null) {
