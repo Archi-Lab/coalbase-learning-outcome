@@ -26,6 +26,7 @@ public class Course extends EntityWithUniqueId<Course> {
 
   private String title;
   private String description;
+  private String author;
 
   @OneToMany(mappedBy = "id")
   private List<LearningSpace> learningSpaces;

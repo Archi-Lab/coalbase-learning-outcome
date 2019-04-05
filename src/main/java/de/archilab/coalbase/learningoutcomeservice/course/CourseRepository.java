@@ -11,4 +11,11 @@ import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
 public interface CourseRepository extends
     CrudRepository<Course, UniqueId<Course>> {
 
+  /*
+  TODO add filter to findAll
+  @PostFilter("filterObject.author == authentication.name")
+  */
+
+  @Override
+  Iterable<Course> findAll();
 }

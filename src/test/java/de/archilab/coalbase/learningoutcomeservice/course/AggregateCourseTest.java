@@ -120,7 +120,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
     JSONObject courseJsonObject = new JSONObject(courseAsJsonString);
@@ -162,7 +164,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
     JSONObject courseJsonObject = new JSONObject(courseAsJsonString);
@@ -206,7 +210,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
 
@@ -263,7 +269,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
 
@@ -296,7 +304,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
 
@@ -309,7 +319,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
 
@@ -323,7 +335,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
 
@@ -337,7 +351,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
 
@@ -358,7 +374,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
 
@@ -374,7 +392,9 @@ public class AggregateCourseTest {
     LearningSpace learningSpace = this.createLearningSpace();
     String title = "createCourseTestTitle";
     String description = "create Course Test Description";
-    Course course = new Course(title, description, new ArrayList<>(Arrays.asList(learningSpace)));
+    String author = "testProfessor";
+    Course course = new Course(title, description, author,
+        new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
 

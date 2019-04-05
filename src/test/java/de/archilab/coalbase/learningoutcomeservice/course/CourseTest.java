@@ -14,11 +14,13 @@ public class CourseTest {
 
   private static final String TITLE = "Test title";
   private static final String DESCRIPTION = "A test description";
+  private static final String AUTHOR = "testProfessor";
   private static final LearningSpace LEARNING_SPACE = new LearningSpace("testLearningSpace");
 
   @Test
   public void createCourseTest() {
-    Course course = new Course(TITLE, DESCRIPTION, new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+        new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(course.getTitle()).isEqualTo(TITLE);
@@ -27,7 +29,7 @@ public class CourseTest {
 
   @Test
   public void addLearningSpaceToCourse() {
-    Course course = new Course(TITLE, DESCRIPTION, null);
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR, null);
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(course.getTitle()).isEqualTo(TITLE);
@@ -40,7 +42,7 @@ public class CourseTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void addEmptyLearningSpaceToCourse() {
-    Course course = new Course(TITLE, DESCRIPTION, null);
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR, null);
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(course.getTitle()).isEqualTo(TITLE);
@@ -51,7 +53,8 @@ public class CourseTest {
 
   @Test
   public void removeLearningSpaceFromCourse() {
-    Course course = new Course(TITLE, DESCRIPTION, new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+        new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(course.getTitle()).isEqualTo(TITLE);
@@ -63,7 +66,8 @@ public class CourseTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void removeEmptyLearningSpaceFromCourse() {
-    Course course = new Course(TITLE, DESCRIPTION, new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
+        new ArrayList<>(Arrays.asList(LEARNING_SPACE)));
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(course.getTitle()).isEqualTo(TITLE);
@@ -74,7 +78,7 @@ public class CourseTest {
 
   @Test(expected = EmptyListException.class)
   public void removeLearningSpaceFromEmptyCourse() {
-    Course course = new Course(TITLE, DESCRIPTION, null);
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR, null);
 
     assertThat(course.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(course.getTitle()).isEqualTo(TITLE);
