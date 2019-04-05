@@ -3,8 +3,6 @@ version: '3.4'
 services:
   learning_outcome_db:
     image: postgres:10.1
-    ports:
-      - "8080:8080"
     volumes:
       - learning_outcome_db:/var/lib/postgresql/data
     environment:
@@ -16,6 +14,8 @@ services:
       - learning_outcome_ms_db
   learning_outcome_ms:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome
+    ports:
+      - "8080:8080"
     environment:
       - TZ=Europe/Berlin
       - LEARNING_OUTCOME_DB=learning_outcome_db
