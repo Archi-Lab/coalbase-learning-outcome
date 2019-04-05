@@ -32,6 +32,8 @@ import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -133,6 +135,7 @@ public class AggregateCourseTest {
         .andExpect(jsonPath("$.description", is(course.getDescription())))
         .andExpect(jsonPath("$._links.learningSpaces", notNullValue()))
         .andExpect(jsonPath("$._links.self", notNullValue()));
+    SecurityContextHolder.setContext(TestSecurityContextHolder.getContext());
 
     final List<Course> courses = (List<Course>) this.courseRepository.findAll();
     assertThat(courses).isNotNull().hasSize(1);
@@ -176,6 +179,7 @@ public class AggregateCourseTest {
         .andExpect(jsonPath("$.description", is(course.getDescription())))
         .andExpect(jsonPath("$._links.learningSpaces", notNullValue()))
         .andExpect(jsonPath("$._links.self", notNullValue()));
+    SecurityContextHolder.setContext(TestSecurityContextHolder.getContext());
 
     final List<Course> courses = (List<Course>) this.courseRepository.findAll();
     assertThat(courses).isNotNull().hasSize(1);
@@ -209,8 +213,8 @@ public class AggregateCourseTest {
     this.courseRepository.save(course);
 
     LearningSpace learningSpace2 = this.createLearningSpace();
-    String titleChanged = "createCourseTestTitle";
-    String descriptionChanged = "create Course Test Description";
+    String titleChanged = "createCourseTestTitle2";
+    String descriptionChanged = "create Course Test Description2";
 
     course.setTitle(titleChanged);
     course.setDescription(descriptionChanged);
@@ -221,7 +225,6 @@ public class AggregateCourseTest {
     JSONArray jsonArray = new JSONArray(Arrays.asList("learningSpaces/" + learningSpace.getId(),
         "learningSpaces/" + learningSpace2.getId()));
     courseJsonObject.put("learningSpaces", jsonArray);
-
     this.mvc.perform(
         patch("/courses/" + course.getId()).with(csrf()).content(courseJsonObject.toString())
             .contentType(
@@ -230,6 +233,7 @@ public class AggregateCourseTest {
         .andExpect(jsonPath("$.description", is(descriptionChanged)))
         .andExpect(jsonPath("$._links.learningSpaces", notNullValue()))
         .andExpect(jsonPath("$._links.self", notNullValue()));
+    SecurityContextHolder.setContext(TestSecurityContextHolder.getContext());
 
     final List<Course> courses = (List<Course>) this.courseRepository.findAll();
     assertThat(courses).isNotNull().hasSize(1);
@@ -240,8 +244,6 @@ public class AggregateCourseTest {
     assertThat(savedCourse.getLearningSpaces()).isNotNull().isNotEmpty().hasSize(2);
     assertThat(savedCourse.getLearningSpaces().get(0)).isEqualTo(learningSpace);
     assertThat(savedCourse.getLearningSpaces().get(1)).isEqualTo(learningSpace2);
-
-    /*Test kafka message */
     ConsumerRecord<String, String> record = AggregateCourseTest.records
         .poll(10, TimeUnit.SECONDS);
 
@@ -303,10 +305,7 @@ public class AggregateCourseTest {
   @Test
   public void updateCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -365,6 +364,7 @@ public class AggregateCourseTest {
   }
 
   @Test
+  @WithMockUser(username = AUTHOR, roles = {"coalbase_student"})
   public void getCoursesExpectOneCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
     Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
