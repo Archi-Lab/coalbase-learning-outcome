@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.annotation.HandleAfterCreate;
 import org.springframework.data.rest.core.annotation.HandleAfterDelete;
 import org.springframework.data.rest.core.annotation.HandleAfterSave;
+import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +26,12 @@ public class CourseEventHandler {
       KafkaMessageProducer kafkaMessageProducer) {
     this.topic = topic;
     this.kafkaMessageProducer = kafkaMessageProducer;
+  }
+
+  @HandleBeforeCreate
+  public void setAuthorBeforeCreate(Course course) {
+    String name = SecurityContextHolder.getContext().getAuthentication().getName();
+    course.setAuthor(name);
   }
 
   @HandleAfterCreate

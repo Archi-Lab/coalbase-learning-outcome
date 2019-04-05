@@ -61,11 +61,12 @@ import de.archilab.coalbase.learningoutcomeservice.learningspace.LearningSpaceRe
 public class AggregateCourseTest {
 
   private static final String COURSE_TOPIC = "course";
-
   @ClassRule
   public static final EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1, false,
       AggregateCourseTest.COURSE_TOPIC);
-
+  private static final String TITLE = "createCourseTestTitle";
+  private static final String DESCRIPTION = "create Course Test Description";
+  private static final String AUTHOR = "testProfessor";
   private static BlockingQueue<ConsumerRecord<String, String>> records;
 
   @Autowired
@@ -118,10 +119,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void createCourseExpectCreatedWithPost() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -140,8 +138,8 @@ public class AggregateCourseTest {
     assertThat(courses).isNotNull().hasSize(1);
     Course savedCourse = courses.get(0);
     assertThat(savedCourse.getId()).isNotNull();
-    assertThat(savedCourse.getTitle()).isEqualTo(title);
-    assertThat(savedCourse.getDescription()).isEqualTo(description);
+    assertThat(savedCourse.getTitle()).isEqualTo(TITLE);
+    assertThat(savedCourse.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(savedCourse.getLearningSpaces()).isNotNull().isNotEmpty().hasSize(1);
     assertThat(savedCourse.getLearningSpaces().get(0)).isEqualTo(learningSpace);
 
@@ -162,10 +160,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void createCourseExpectCreateWithPut() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -186,8 +181,8 @@ public class AggregateCourseTest {
     assertThat(courses).isNotNull().hasSize(1);
     Course savedCourse = courses.get(0);
     assertThat(savedCourse.getId()).isNotNull();
-    assertThat(savedCourse.getTitle()).isEqualTo(title);
-    assertThat(savedCourse.getDescription()).isEqualTo(description);
+    assertThat(savedCourse.getTitle()).isEqualTo(TITLE);
+    assertThat(savedCourse.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(savedCourse.getLearningSpaces()).isNotNull().isNotEmpty().hasSize(1);
     assertThat(savedCourse.getLearningSpaces().get(0)).isEqualTo(learningSpace);
 
@@ -208,10 +203,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void updateCourseExpectedUpdatedWithPatch() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
@@ -267,10 +259,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
   public void deleteCourseExpectDeleted() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
@@ -302,10 +291,7 @@ public class AggregateCourseTest {
   @Test
   public void createCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -333,10 +319,7 @@ public class AggregateCourseTest {
   @Test
   public void updateCourseExpectNotAuthorizedWithPatch() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -349,10 +332,7 @@ public class AggregateCourseTest {
   @Test
   public void deleteCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
@@ -372,10 +352,7 @@ public class AggregateCourseTest {
   @Test
   public void getCourseExpectSpecificCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);
@@ -390,10 +367,7 @@ public class AggregateCourseTest {
   @Test
   public void getCoursesExpectOneCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    String title = "createCourseTestTitle";
-    String description = "create Course Test Description";
-    String author = "testProfessor";
-    Course course = new Course(title, description, author,
+    Course course = new Course(TITLE, DESCRIPTION, AUTHOR,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     this.courseRepository.save(course);

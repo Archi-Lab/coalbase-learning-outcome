@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import de.archilab.coalbase.learningoutcomeservice.core.exceptions.EmptyListException;
 import de.archilab.coalbase.learningoutcomeservice.learningspace.LearningSpace;
@@ -27,6 +29,7 @@ public class Course extends EntityWithUniqueId<Course> {
 
   private String title;
   private String description;
+  @JsonIgnore
   private String author;
 
   @OneToMany(targetEntity = LearningSpace.class)
