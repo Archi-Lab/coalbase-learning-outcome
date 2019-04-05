@@ -14,7 +14,6 @@ public class CourseTest {
 
   private static final String TITLE = "Test title";
   private static final String DESCRIPTION = "A test description";
-  private static final String AUTHOR = "testProfessor";
   private static final LearningSpace LEARNING_SPACE = new LearningSpace("testLearningSpace");
 
   @Test
