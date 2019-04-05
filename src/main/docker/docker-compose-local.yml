@@ -3,3 +3,5 @@ version: '3.4'
 services:
   learning_outcome_ms:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome-dev
+    ports:
+      - "8080:8081"
