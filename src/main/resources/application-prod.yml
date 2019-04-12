@@ -1,21 +1,22 @@
+---
 spring:
   datasource:
     url: jdbc:postgresql://${LEARNING_OUTCOME_DB}:5432/${LEARNING_OUTCOME_DB_NAME}
     password: ${LEARNING_OUTCOME_DB_PW}
     username: ${LEARNING_OUTCOME_DB_USER}
-  #kafka servers
+  # kafka servers
   kafka:
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
-#Keycloak
+# Keycloak
 keycloak:
   auth-server-url: https://login.coalbase.io/auth/
-#CORS
+# CORS
 security:
   cors:
     allowed-origins: 'coalbase.io'
     allowed-headers: '*'
     allowed-methods: '*'
-#Eureka
+# Eureka
 eureka:
   client:
     serviceUrl:

@@ -1,32 +1,25 @@
+---
 # TODO decide if h2 should run in postgresql mode for better compatibility with prod env
-#spring.datasource.url=jdbc:h2:~/test;MODE=PostgreSQL
-#H2 Dialect
+# spring.datasource.url=jdbc:h2:~/test;MODE=PostgreSQL
+# H2 Dialect
 spring:
   jpa:
     properties:
       hibernate:
         dialect: de.archilab.coalbase.learningoutcomeservice.core.local.H2DialectCustom
-  #Kafka
+  # Kafka
   kafka:
     bootstrap-servers: localhost:9090
-#Keycloak
+# Keycloak
 keycloak:
   auth-server-url: http://localhost:8090/auth/
-#Logging
-#debug=true
-#logging.level.root=DEBUG
-#logging.level.web=DEBUG
-#logging.level.sql=DEBUG
-#logging.level.org.keycloak=DEBUG
-#logging.level.org.hibernate.SQL=TRACE
-#logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
-#CORS
+# CORS
 security:
   cors:
     allowed-origins: '*'
     allowed-headers: '*'
     allowed-methods: '*'
-#Eureka
+# Eureka
 eureka:
   client:
     serviceUrl:

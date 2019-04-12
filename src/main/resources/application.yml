@@ -1,43 +1,44 @@
-#Spring
+---
+# Spring
 spring:
   application:
     name: learning-outcome-ms
   profiles:
     active: local
-  #Hibernate ddl auto
+  # Hibernate ddl auto
   jpa:
     hibernate:
       ddl-auto: validate
-  #Spring Data Rest
+  # Spring Data Rest
   data:
     rest:
       return-body-on-create: true
       return-body-on-update: true
       default-media-type: application/hal+json
-  #JSON Pretty Print
+  # JSON Pretty Print
   jackson:
     serialization:
       indent-output: true
     deserialization:
       accept-empty-array-as-null-object: true
-#Server
+# Server
 server:
   port: 8080
   compression.enabled: true
   compression.mime-types: application/json,application/xml,text/html,text/xml,text/plain
-#Keycloak
+# Keycloak
 keycloak:
   enabled: true
   realm: coalbase
   resource: coalbase-api
   bearer-only: true
   principal-attribute: preferred_username
-#Kafka-topic
+# Kafka-topic
 learning-outcome.topic: learning-outcome
 learning-space.topic: learning-space
 course.topic: course
 
-#Enable if you want to create a sql script for the db
-#spring.jpa.properties.javax.persistence.schema-generation.create-source: metadata
-#spring.jpa.properties.javax.persistence.schema-generation.scripts.action: create
-#spring.jpa.properties.javax.persistence.schema-generation.scripts.create-target: create.sql
+# Enable if you want to create a sql script for the db
+# spring.jpa.properties.javax.persistence.schema-generation.create-source: metadata
+# spring.jpa.properties.javax.persistence.schema-generation.scripts.action: create
+# spring.jpa.properties.javax.persistence.schema-generation.scripts.create-target: create.sql
