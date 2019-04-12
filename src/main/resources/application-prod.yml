@@ -20,5 +20,5 @@ security:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://service-discovery_eureka-1:8761/eureka/, http://service-discovery_eureka-2:8761/eureka/
+      defaultZone: http://eureka-1:8761/eureka/,http://eureka-2:8761/eureka/
 
