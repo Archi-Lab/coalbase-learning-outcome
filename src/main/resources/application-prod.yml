@@ -13,7 +13,7 @@ keycloak:
 # CORS
 security:
   cors:
-    allowed-origins: '*'
+    allowed-origins: 'https://coalbase.io'
     allowed-headers: '*'
     allowed-methods: '*'
 # Eureka
