@@ -78,9 +78,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
   private void generalHttpSecuritySettings(HttpSecurity httpSecurity) throws Exception {
     httpSecurity
-        .cors().configurationSource(this.customCorsConfiguration.corsConfigurationSource())
+        /*.cors().configurationSource(this.customCorsConfiguration.corsConfigurationSource())
         .and()
-
+        */
         // Possible security issue! Take a look into this!
         .csrf().disable()
         // Needed for H2 console. Possible security issue!
