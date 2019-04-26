@@ -132,43 +132,40 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         //ListResource
         .antMatchers(HttpMethod.OPTIONS, listResource)
         .permitAll()
-
         .antMatchers(HttpMethod.GET, listResource)
         .permitAll()
-
         .antMatchers(HttpMethod.HEAD, listResource)
         .permitAll()
-
         .antMatchers(HttpMethod.POST, listResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
         //ItemResource
         .antMatchers(HttpMethod.GET, itemResource)
         .permitAll()
-
         .antMatchers(HttpMethod.HEAD, itemResource)
         .permitAll()
-
+        .antMatchers(HttpMethod.OPTIONS, itemResource)
+        .permitAll()
         .antMatchers(HttpMethod.PUT, itemResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
         .antMatchers(HttpMethod.PATCH, itemResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
         .antMatchers(HttpMethod.DELETE, itemResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
+
         //AssociationResource
         .antMatchers(HttpMethod.GET, associationResource)
         .permitAll()
-
+        .antMatchers(HttpMethod.HEAD, associationResource)
+        .permitAll()
+        .antMatchers(HttpMethod.OPTIONS, associationResource)
+        .permitAll()
         .antMatchers(HttpMethod.PUT, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
         .antMatchers(HttpMethod.PATCH, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
         .antMatchers(HttpMethod.POST, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN)
-
         .antMatchers(HttpMethod.DELETE, associationResource)
         .hasAnyRole(SecurityConfig.ROLE_PROFESSOR, SecurityConfig.ROLE_ADMIN);
   }
