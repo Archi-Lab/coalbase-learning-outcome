@@ -16,12 +16,12 @@ services:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome
     environment:
       - TZ=Europe/Berlin
-      - LEARNING_OUTCOME_DB=learning_outcome_db
+      - LEARNING_OUTCOME_DB=postgres
       - LEARNING_OUTCOME_DB_NAME=learning_outcome
       - LEARNING_OUTCOME_DB_USER=learning_outcome
       - LEARNING_OUTCOME_DB_PW=_CoalbaseLearningOutcomeMS_2017
     depends_on:
-      - learning_outcome_db
+      - postgres
     networks:
       - service_internal
       - coalbase_backend
