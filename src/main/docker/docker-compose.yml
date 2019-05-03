@@ -11,7 +11,7 @@ services:
       - POSTGRES_DB=learning_outcome
       - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
-      - learning_outcome_ms_db
+      - service_internal
   springboot-service:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome
     environment:
@@ -23,11 +23,11 @@ services:
     depends_on:
       - learning_outcome_db
     networks:
-      - learning_outcome_ms_db
+      - service_internal
       - coalbase_backend
 volumes:
   learning_outcome_db: {}
 networks:
-  learning_outcome_ms_db:
+  service_internal:
   coalbase_backend:
     external: true
