@@ -2,6 +2,8 @@
 # TODO decide if h2 should run in postgresql mode for better compatibility with prod env
 # spring.datasource.url=jdbc:h2:~/test;MODE=PostgreSQL
 # H2 Dialect
+server:
+  port: 8081
 spring:
   jpa:
     properties:
@@ -24,3 +26,4 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+    enabled: false
