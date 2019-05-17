@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  learning_outcome_db:
+  postgres:
     image: postgres:10.1
     volumes:
       - learning_outcome_db:/var/lib/postgresql/data
@@ -11,23 +11,23 @@ services:
       - POSTGRES_DB=learning_outcome
       - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
-      - learning_outcome_ms_db
-  learning_outcome_ms:
+      - service_internal
+  springboot-service:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome
     environment:
       - TZ=Europe/Berlin
-      - LEARNING_OUTCOME_DB=learning_outcome_db
+      - LEARNING_OUTCOME_DB=postgres
       - LEARNING_OUTCOME_DB_NAME=learning_outcome
       - LEARNING_OUTCOME_DB_USER=learning_outcome
       - LEARNING_OUTCOME_DB_PW=_CoalbaseLearningOutcomeMS_2017
     depends_on:
-      - learning_outcome_db
+      - postgres
     networks:
-      - learning_outcome_ms_db
+      - service_internal
       - coalbase_backend
 volumes:
   learning_outcome_db: {}
 networks:
-  learning_outcome_ms_db:
+  service_internal:
   coalbase_backend:
     external: true

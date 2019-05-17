@@ -1,18 +1,18 @@
 version: '3.4'
 
 services:
-  learning_outcome_db:
+  postgres:
     logging:
       driver: gelf
       options:
         gelf-address: "udp://127.0.0.1:12201"
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         max_attempts: 3
         window: 120s
-  learning_outcome_ms:
+  springboot-service:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${BUILD_ID}
     deploy:
       replicas: 2
@@ -21,7 +21,7 @@ services:
         delay: 10s
         order: start-first
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         max_attempts: 3
         window: 120s
