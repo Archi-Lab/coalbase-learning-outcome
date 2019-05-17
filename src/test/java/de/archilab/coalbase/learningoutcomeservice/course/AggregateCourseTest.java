@@ -118,7 +118,7 @@ public class AggregateCourseTest {
   }
 
   @Test
-  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void createCourseExpectCreatedWithPost() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
     Course course = new Course(TITLE, DESCRIPTION,
@@ -160,7 +160,7 @@ public class AggregateCourseTest {
   }
 
   @Test
-  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void createCourseExpectCreateWithPut() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
     Course course = new Course(TITLE, DESCRIPTION,
@@ -204,7 +204,7 @@ public class AggregateCourseTest {
   }
 
   @Test
-  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void updateCourseExpectedUpdatedWithPatch() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
     Course course = new Course(TITLE, DESCRIPTION,
@@ -258,7 +258,7 @@ public class AggregateCourseTest {
 
 
   @Test
-  @WithMockUser(username = AUTHOR, roles = {"coalbase_professor"})
+  @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void deleteCourseExpectDeleted() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
     Course course = new Course(TITLE, DESCRIPTION,
@@ -362,7 +362,7 @@ public class AggregateCourseTest {
   }
 
   @Test
-  @WithMockUser(username = AUTHOR, roles = {"coalbase_student"})
+  @WithMockUser(username = AUTHOR, roles = {"student"})
   public void getCoursesExpectOneCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
     Course course = new Course(TITLE, DESCRIPTION,

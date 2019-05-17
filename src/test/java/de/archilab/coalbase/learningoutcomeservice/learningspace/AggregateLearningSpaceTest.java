@@ -119,7 +119,7 @@ public class AggregateLearningSpaceTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void createLearningSpace() throws Exception {
     LearningSpace learningSpaceToPost = this.buildSampleLearningSpaceWithRequirment();
 
@@ -193,7 +193,7 @@ public class AggregateLearningSpaceTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void putLearningSpace() throws Exception {
     LearningSpace learningSpaceToPut = this.buildSampleLearningSpaceWithRequirment();
 
@@ -244,7 +244,7 @@ public class AggregateLearningSpaceTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void expectUpdateEventOnSecondPutLearningSpace() throws Exception {
     LearningSpace learningSpaceToPut = this.buildSampleLearningSpaceWithRequirment();
 
@@ -320,7 +320,7 @@ public class AggregateLearningSpaceTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void patchLearningSpace() throws Exception {
     UniqueId<LearningSpace> identifier = this.buildAndSaveLearningSpaceWithRequirment();
     Optional<LearningSpace> optionalLearningSpace = this.learningSpaceRepository
@@ -368,7 +368,7 @@ public class AggregateLearningSpaceTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void deleteLearningSpace() throws Exception {
     UniqueId<LearningSpace> identifier = this.buildAndSaveLearningSpaceWithRequirment();
     Optional<LearningSpace> optionalLearningSpace = this.learningSpaceRepository

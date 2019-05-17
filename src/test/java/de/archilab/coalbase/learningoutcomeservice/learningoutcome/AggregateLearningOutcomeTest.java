@@ -107,7 +107,7 @@ public class AggregateLearningOutcomeTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void createLearningOutcome() throws Exception {
 
     LearningOutcome learningOutcomeToPost = this.buildSampleLearningOutcome();
@@ -167,7 +167,7 @@ public class AggregateLearningOutcomeTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void putLearningOutcome() throws Exception {
     LearningOutcome learningOutcomeToPut = this.buildSampleLearningOutcome();
 
@@ -228,7 +228,7 @@ public class AggregateLearningOutcomeTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void patchLearningOutcome() throws Exception {
     UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
@@ -278,7 +278,7 @@ public class AggregateLearningOutcomeTest {
   }
 
   @Test
-  @WithMockUser(username = "testProfessor", roles = {"coalbase_professor"})
+  @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void deleteLearningOutcome() throws Exception {
     UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository

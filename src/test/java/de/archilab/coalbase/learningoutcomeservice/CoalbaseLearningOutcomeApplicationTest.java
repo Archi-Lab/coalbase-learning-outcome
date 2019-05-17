@@ -32,13 +32,13 @@ public class CoalbaseLearningOutcomeApplicationTest {
   }
 
   @Test
-  @WithMockUser(username = "testAdmin", roles = {"coalbase_admin"})
+  @WithMockUser(username = "testAdmin", roles = {"admin"})
   public void notWhiteListedURLWithAdminRoleShouldSucceedWith200() throws Exception {
     this.mvc.perform(get("/helloworld").with(csrf())).andExpect(status().is(200));
   }
 
   @Test
-  @WithMockUser(username = "testuser", roles = ("coalbase_user"))
+  @WithMockUser(username = "testuser", roles = ("user"))
   public void getAuthorizedHelloWorldWithNotSufficientRolesShouldFail403() throws Exception {
     this.mvc.perform(get("/authorizedhelloworld").with(csrf())).andExpect(status().is(403));
   }
