@@ -29,7 +29,7 @@ server:
 # Keycloak
 keycloak:
   enabled: true
-  realm: coalbase
+  realm: archilab
   resource: coalbase-api
   bearer-only: true
   principal-attribute: preferred_username

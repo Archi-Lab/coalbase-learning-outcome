@@ -9,11 +9,11 @@ spring:
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
 # Keycloak
 keycloak:
-  auth-server-url: https://login.coalbase.io/auth/
+  auth-server-url: https://login.archi-lab.io/auth/
 # CORS
 security:
   cors:
-    allowed-origins: 'https://coalbase.io'
+    allowed-origins: 'https://archi-lab.io'
     allowed-headers: '*'
     allowed-methods: '*'
 # Eureka

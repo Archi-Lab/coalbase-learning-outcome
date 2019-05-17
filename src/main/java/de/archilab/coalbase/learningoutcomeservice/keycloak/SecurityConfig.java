@@ -35,9 +35,9 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-  private static final String ROLE_STUDENT = "coalbase_student";
-  private static final String ROLE_PROFESSOR = "coalbase_professor";
-  private static final String ROLE_ADMIN = "coalbase_admin";
+  private static final String ROLE_STUDENT = "student";
+  private static final String ROLE_PROFESSOR = "professor";
+  private static final String ROLE_ADMIN = "admin";
   private static final String H2_CONSOLE = "/h2-console";
   private static final String H2_CONSOLE_SUB = "/h2-console/*";
 
