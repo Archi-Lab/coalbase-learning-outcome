@@ -13,7 +13,7 @@ keycloak:
 # CORS
 security:
   cors:
-    allowed-origins: 'https://archi-lab.io'
+    allowed-origins: 'https://coalbase.archi-lab.io'
     allowed-headers: '*'
     allowed-methods: '*'
 # Eureka
