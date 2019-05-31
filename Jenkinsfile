@@ -31,15 +31,12 @@ pipeline {
         }
         stage("Quality Check") {
             steps {
-                sh "mvn checkstyle:checkstyle"
                 jacoco()
                 script { scannerHome = ability "SonarQube Scanner"; }
                 withSonarQubeEnv("SonarQube-Server") { sh "${scannerHome}/bin/sonar-scanner" }
             }
             post {
-                always {
-                    step([$class: "hudson.plugins.checkstyle.CheckStylePublisher", pattern: "**/target/checkstyle-result.xml", unstableTotalAll: "100"])
-                }
+
             }
         }
         stage("Quality Gate") {
