@@ -35,9 +35,7 @@ pipeline {
                 script { scannerHome = ability "SonarQube Scanner"; }
                 withSonarQubeEnv("SonarQube-Server") { sh "${scannerHome}/bin/sonar-scanner" }
             }
-            post {
 
-            }
         }
         stage("Quality Gate") {
             steps {
