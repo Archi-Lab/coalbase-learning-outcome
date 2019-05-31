@@ -17,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.bouncycastle.cert.ocsp.Req;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
