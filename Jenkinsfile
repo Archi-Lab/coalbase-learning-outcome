@@ -13,7 +13,11 @@ pipeline {
                 sh "mvn -DargLine=\"-Dspring.profiles.active=local\" test"
             }
             post {
-                always { junit "target/surefire-reports/*.xml" }
+                always {
+                    sh "echo test!"
+                    junit "target/surefire-reports/*.xml"
+
+                }
                 success {
                     updateGitlabCommitStatus name: "Test", state: "success"
                 }
