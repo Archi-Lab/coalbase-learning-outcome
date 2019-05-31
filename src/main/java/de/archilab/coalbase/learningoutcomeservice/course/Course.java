@@ -25,6 +25,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class Course extends EntityWithUniqueId<Course> {
 
+  private String shortTitle;
   private String title;
   private String description;
   @JsonIgnore
@@ -34,7 +35,8 @@ public class Course extends EntityWithUniqueId<Course> {
   @JoinColumn(name = "course_uuid")
   private List<LearningSpace> learningSpaces;
 
-  public Course(String title, String description, List<LearningSpace> learningSpaces) {
+  public Course(String shortTitle, String title, String description, List<LearningSpace> learningSpaces) {
+    this.shortTitle = shortTitle;
     this.title = title;
     this.description = description;
     this.learningSpaces = learningSpaces;

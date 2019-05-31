@@ -3,27 +3,26 @@ package de.archilab.coalbase.learningoutcomeservice.learningspace;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.*;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Ability;
 
 @Transactional
 public class LearningSpaceTest {
 
   private static final LearningOutcome learningOutcome = new LearningOutcome(
-      new Competence("actionValue", TaxonomyLevel.SYNTHESIS), Collections.<Tool>emptyList(),
-      new Purpose("purposeValue"));
+      new Role("Student"), new Competence("actionValue", TaxonomyLevel.SYNTHESIS),
+      Collections.<Requirement>emptyList(), Collections.<Ability>emptyList(),
+      Collections.<Purpose>emptyList());
 
   private static final LearningOutcome secondLearningOutcome = new LearningOutcome(
-      new Competence("newActionValue", TaxonomyLevel.ANALYSIS), Collections.<Tool>emptyList(),
-      new Purpose("newPurposeValue"));
+          new Role("Student"), new Competence("newActionValue", TaxonomyLevel.ANALYSIS),
+          Collections.<Requirement>emptyList(), Collections.<Ability>emptyList(),
+          Collections.<Purpose>emptyList());
 
   @Test
   public void createLearningSpace() {

@@ -29,7 +29,7 @@ pipeline {
             steps {
                 sh "mvn checkstyle:checkstyle"
                 jacoco()
-                script { scannerHome = tool "SonarQube Scanner"; }
+                script { scannerHome = ability "SonarQube Scanner"; }
                 withSonarQubeEnv("SonarQube-Server") { sh "${scannerHome}/bin/sonar-scanner" }
             }
             post {

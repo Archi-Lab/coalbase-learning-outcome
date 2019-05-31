@@ -66,6 +66,7 @@ public class AggregateCourseTest {
   @ClassRule
   public static final EmbeddedKafkaRule BROKER = new EmbeddedKafkaRule(1, false,
       AggregateCourseTest.COURSE_TOPIC);
+  private static final String SHORT_TITLE = "createCourseTestShortTitle";
   private static final String TITLE = "createCourseTestTitle";
   private static final String DESCRIPTION = "create Course Test Description";
   private static final String AUTHOR = "testProfessor";
@@ -121,7 +122,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void createCourseExpectCreatedWithPost() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -163,7 +164,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void createCourseExpectCreateWithPut() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
     course.setAuthor(AUTHOR);
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -207,7 +208,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void updateCourseExpectedUpdatedWithPatch() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
     course.setAuthor(AUTHOR);
     this.courseRepository.save(course);
@@ -261,7 +262,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = AUTHOR, roles = {"professor"})
   public void deleteCourseExpectDeleted() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
     course.setAuthor(AUTHOR);
     this.courseRepository.save(course);
@@ -293,7 +294,7 @@ public class AggregateCourseTest {
   @Test
   public void createCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -305,7 +306,7 @@ public class AggregateCourseTest {
   @Test
   public void updateCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -318,7 +319,7 @@ public class AggregateCourseTest {
   @Test
   public void updateCourseExpectNotAuthorizedWithPatch() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
 
     String courseAsJsonString = this.objectMapper.writeValueAsString(course);
@@ -331,7 +332,7 @@ public class AggregateCourseTest {
   @Test
   public void deleteCourseExpectNotAuthorized() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
     this.courseRepository.save(course);
 
@@ -350,7 +351,7 @@ public class AggregateCourseTest {
   @Test
   public void getCourseExpectSpecificCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
     this.courseRepository.save(course);
 
@@ -365,7 +366,7 @@ public class AggregateCourseTest {
   @WithMockUser(username = AUTHOR, roles = {"student"})
   public void getCoursesExpectOneCourse() throws Exception {
     LearningSpace learningSpace = this.createLearningSpace();
-    Course course = new Course(TITLE, DESCRIPTION,
+    Course course = new Course(SHORT_TITLE, TITLE, DESCRIPTION,
         new ArrayList<>(Arrays.asList(learningSpace)));
     course.setAuthor(AUTHOR);
     this.courseRepository.save(course);

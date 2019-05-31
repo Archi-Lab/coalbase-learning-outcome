@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -42,6 +43,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -53,12 +55,7 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Competence;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcomeRepository;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Purpose;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.TaxonomyLevel;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Tool;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Ability;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -461,40 +458,51 @@ public class AggregateLearningSpaceTest {
   }
 
   private LearningSpace buildSampleLearningSpaceWithRequirment() {
+    Role role = new Role("Student");
+
     Competence competence = new Competence(
         "FirstCompetence",
         TaxonomyLevel.SYNTHESIS);
 
-    Tool tool0 = new Tool(
-        "FirstTool");
-    Tool tool1 = new Tool(
-        "SecondTool");
-    Purpose purpose = new Purpose(
-        "FirstPurpose");
+    Requirement requirement = new Requirement("Alles können", TaxonomyLevel.EVALUATION);
 
-    LearningOutcome firstLearningOutcome = new LearningOutcome(competence,
-        Arrays.asList(tool0, tool1),
-        purpose);
+    Ability ability0 = new Ability(
+        "FirstTool", TaxonomyLevel.EVALUATION);
+    Ability ability1 = new Ability(
+        "SecondTool", TaxonomyLevel.ANALYSIS);
+    Purpose purpose = new Purpose(
+        "FirstPurpose", TaxonomyLevel.ANALYSIS);
+
+    LearningOutcome firstLearningOutcome = new LearningOutcome(role, competence,
+        Arrays.asList(requirement),
+        Arrays.asList(ability0, ability1),
+        Arrays.asList(purpose));
     this.learningOutcomeRepository.save(firstLearningOutcome);
 
     LearningSpace firstLearningSpace = new LearningSpace("FirstLearningSpace",
         firstLearningOutcome);
     this.learningSpaceRepository.save(firstLearningSpace);
 
+    Role secondRole = new Role("Student");
+
     Competence secondCompetence = new Competence(
         "Die Studierenden können Marketingentscheidungen informationsgestützt treffen",
         TaxonomyLevel.SYNTHESIS);
 
-    Tool secondTool0 = new Tool(
-        "das Makro- und Mikroumfeld des relevanten Marktes so wie das eigenen Unternehmen analysieren");
-    Tool secondTool1 = new Tool(
-        "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen");
-    Purpose secondPurpose = new Purpose(
-        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
+    Requirement secondRequirement = new Requirement("Alles können und noch mehr", TaxonomyLevel.EVALUATION);
 
-    LearningOutcome secondLearningOutcome = new LearningOutcome(secondCompetence,
-        Arrays.asList(secondTool0, secondTool1),
-        secondPurpose);
+    Ability secondAbility0 = new Ability(
+        "das Makro- und Mikroumfeld des relevanten Marktes so wie das eigenen Unternehmen analysieren", TaxonomyLevel.EVALUATION);
+    Ability secondAbility1 = new Ability(
+        "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen", TaxonomyLevel.EVALUATION);
+    Purpose secondPurpose = new Purpose(
+        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten", TaxonomyLevel.EVALUATION);
+
+    LearningOutcome secondLearningOutcome = new LearningOutcome(secondRole,
+        secondCompetence,
+        Arrays.asList(secondRequirement),
+        Arrays.asList(secondAbility0, secondAbility1),
+        Arrays.asList(secondPurpose));
     this.learningOutcomeRepository.save(secondLearningOutcome);
 
     return new LearningSpace("LearningSpaceWithRequirement", secondLearningOutcome,

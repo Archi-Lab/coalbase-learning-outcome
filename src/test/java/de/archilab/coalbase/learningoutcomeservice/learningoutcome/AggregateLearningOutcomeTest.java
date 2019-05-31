@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.bouncycastle.cert.ocsp.Req;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -118,14 +119,18 @@ public class AggregateLearningOutcomeTest {
     this.mvc.perform(post("/learningOutcomes").with(csrf()).content(json)
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
+            jsonPath("$.role.value", is(learningOutcomeToPost.getRole().getValue())))
+        .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPost.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
             is(learningOutcomeToPost.getCompetence().getTaxonomyLevel().name())))
         .andExpect(
-            jsonPath("$.tools[0].value", is(learningOutcomeToPost.getTools().get(0).getValue())))
+            jsonPath("$.requirements[0].value", is(learningOutcomeToPost.getRequirements().get(0).getValue())))
         .andExpect(
-            jsonPath("$.tools[1].value", is(learningOutcomeToPost.getTools().get(1).getValue())))
-        .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPost.getPurpose().getValue())))
+            jsonPath("$.abilities[0].value", is(learningOutcomeToPost.getAbilities().get(0).getValue())))
+        .andExpect(
+            jsonPath("$.abilities[1].value", is(learningOutcomeToPost.getAbilities().get(1).getValue())))
+        .andExpect(jsonPath("$.purposes[0].value", is(learningOutcomeToPost.getPurposes().get(0).getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
     List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
@@ -135,13 +140,18 @@ public class AggregateLearningOutcomeTest {
         .findById(learningOutcomes.get(0).getId());
     assertThat(optionalLearningOutcome.isPresent()).isTrue();
     LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
+    assertThat(savedLearningOutcome.getRole())
+        .isEqualTo(learningOutcomeToPost.getRole());
     assertThat(savedLearningOutcome.getCompetence())
         .isEqualTo(learningOutcomeToPost.getCompetence());
-    assertThat(savedLearningOutcome.getTools().get(1))
-        .isEqualTo(learningOutcomeToPost.getTools().get(1));
-    assertThat(savedLearningOutcome.getTools().get(0))
-        .isEqualTo(learningOutcomeToPost.getTools().get(0));
-    assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPost.getPurpose());
+    assertThat(savedLearningOutcome.getRequirements().get(0))
+        .isEqualTo(learningOutcomeToPost.getRequirements().get(0));
+    assertThat(savedLearningOutcome.getAbilities().get(1))
+        .isEqualTo(learningOutcomeToPost.getAbilities().get(1));
+    assertThat(savedLearningOutcome.getAbilities().get(0))
+        .isEqualTo(learningOutcomeToPost.getAbilities().get(0));
+    assertThat(savedLearningOutcome.getPurposes().get(0))
+        .isEqualTo(learningOutcomeToPost.getPurposes().get(0));
 
     /*Test kafka message */
     ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
@@ -178,14 +188,18 @@ public class AggregateLearningOutcomeTest {
         .content(json).with(csrf())
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
+            jsonPath("$.role.value", is(learningOutcomeToPut.getRole().getValue())))
+        .andExpect(
             jsonPath("$.competence.action", is(learningOutcomeToPut.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
             is(learningOutcomeToPut.getCompetence().getTaxonomyLevel().name())))
         .andExpect(
-            jsonPath("$.tools[0].value", is(learningOutcomeToPut.getTools().get(0).getValue())))
+            jsonPath("$.requirements[0].value", is(learningOutcomeToPut.getRequirements().get(0).getValue())))
         .andExpect(
-            jsonPath("$.tools[1].value", is(learningOutcomeToPut.getTools().get(1).getValue())))
-        .andExpect(jsonPath("$.purpose.value", is(learningOutcomeToPut.getPurpose().getValue())))
+            jsonPath("$.abilities[0].value", is(learningOutcomeToPut.getAbilities().get(0).getValue())))
+        .andExpect(
+            jsonPath("$.abilities[1].value", is(learningOutcomeToPut.getAbilities().get(1).getValue())))
+        .andExpect(jsonPath("$.purposes[0].value", is(learningOutcomeToPut.getPurposes().get(0).getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
     List<LearningOutcome> learningOutcomes = (List<LearningOutcome>) this.learningOutcomeRepository
@@ -196,13 +210,18 @@ public class AggregateLearningOutcomeTest {
     assertThat(optionalLearningOutcome.isPresent()).isTrue();
     LearningOutcome savedLearningOutcome = optionalLearningOutcome.get();
     assertThat(savedLearningOutcome.getId()).isEqualTo(learningOutcomeToPut.getId());
+    assertThat(savedLearningOutcome.getRole())
+            .isEqualTo(learningOutcomeToPut.getRole());
     assertThat(savedLearningOutcome.getCompetence())
-        .isEqualTo(learningOutcomeToPut.getCompetence());
-    assertThat(savedLearningOutcome.getTools().get(0))
-        .isEqualTo(learningOutcomeToPut.getTools().get(0));
-    assertThat(savedLearningOutcome.getTools().get(1))
-        .isEqualTo(learningOutcomeToPut.getTools().get(1));
-    assertThat(savedLearningOutcome.getPurpose()).isEqualTo(learningOutcomeToPut.getPurpose());
+            .isEqualTo(learningOutcomeToPut.getCompetence());
+    assertThat(savedLearningOutcome.getRequirements().get(0))
+            .isEqualTo(learningOutcomeToPut.getRequirements().get(0));
+    assertThat(savedLearningOutcome.getAbilities().get(1))
+            .isEqualTo(learningOutcomeToPut.getAbilities().get(1));
+    assertThat(savedLearningOutcome.getAbilities().get(0))
+            .isEqualTo(learningOutcomeToPut.getAbilities().get(0));
+    assertThat(savedLearningOutcome.getPurposes().get(0))
+            .isEqualTo(learningOutcomeToPut.getPurposes().get(0));
 
     /*Test kafka message */
     ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
@@ -241,11 +260,11 @@ public class AggregateLearningOutcomeTest {
     Competence competence = new Competence("Action", TaxonomyLevel.ANALYSIS);
     learningOutcome.setCompetence(competence);
 
-    Tool tool = new Tool("Tool");
-    learningOutcome.addTool(tool);
+    Ability ability = new Ability("Ability", TaxonomyLevel.ANALYSIS);
+    learningOutcome.addAbility(ability);
 
-    Purpose purpose = new Purpose("Purpose");
-    learningOutcome.setPurpose(purpose);
+    Purpose purpose = new Purpose("Purpose", TaxonomyLevel.SYNTHESIS);
+    learningOutcome.addPurpose(purpose);
 
     ObjectMapper objectMapper = new ObjectMapper();
     String url = "/learningOutcomes/" + identifier.toString();
@@ -258,12 +277,12 @@ public class AggregateLearningOutcomeTest {
         .andExpect(jsonPath("$.competence.taxonomyLevel",
             is(learningOutcome.getCompetence().getTaxonomyLevel().name())))
         .andExpect(
-            jsonPath("$.tools[0].value", is(learningOutcome.getTools().get(0).getValue())))
+            jsonPath("$.abilities[0].value", is(learningOutcome.getAbilities().get(0).getValue())))
         .andExpect(
-            jsonPath("$.tools[1].value", is(learningOutcome.getTools().get(1).getValue())))
+            jsonPath("$.abilities[1].value", is(learningOutcome.getAbilities().get(1).getValue())))
         .andExpect(
-            jsonPath("$.tools[2].value", is(learningOutcome.getTools().get(2).getValue())))
-        .andExpect(jsonPath("$.purpose.value", is(learningOutcome.getPurpose().getValue())))
+            jsonPath("$.abilities[2].value", is(learningOutcome.getAbilities().get(2).getValue())))
+        .andExpect(jsonPath("$.purposes[0].value", is(learningOutcome.getPurposes().get(0).getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
     /*Test kafka message */
@@ -323,12 +342,16 @@ public class AggregateLearningOutcomeTest {
 
     this.mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
+        .andExpect(
+            jsonPath("$.role.value", is(learningOutcome.getRole().getValue())))
         .andExpect(jsonPath("$.competence.action", is(learningOutcome.getCompetence().getAction())))
         .andExpect(jsonPath("$.competence.taxonomyLevel",
             is(learningOutcome.getCompetence().getTaxonomyLevel().name())))
-        .andExpect(jsonPath("$.tools[0].value", is(learningOutcome.getTools().get(0).getValue())))
-        .andExpect(jsonPath("$.tools[1].value", is(learningOutcome.getTools().get(1).getValue())))
-        .andExpect(jsonPath("$.purpose.value", is(learningOutcome.getPurpose().getValue())))
+        .andExpect(
+            jsonPath("$.requirements[0].value", is(learningOutcome.getRequirements().get(0).getValue())))
+        .andExpect(jsonPath("$.abilities[0].value", is(learningOutcome.getAbilities().get(0).getValue())))
+        .andExpect(jsonPath("$.abilities[1].value", is(learningOutcome.getAbilities().get(1).getValue())))
+        .andExpect(jsonPath("$.purposes[0].value", is(learningOutcome.getPurposes().get(0).getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
   }
@@ -345,27 +368,35 @@ public class AggregateLearningOutcomeTest {
 
     this.mvc.perform(get(url).with(csrf())).andExpect(status().isOk())
         .andExpect(content().contentType(MediaTypes.HAL_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[0].role.value",
+            is(learningOutcomes.get(0).getRole().getValue())))
         .andExpect(jsonPath("$._embedded.learningOutcomes[0].competence.action",
             is(learningOutcomes.get(0).getCompetence().getAction())))
         .andExpect(jsonPath("$._embedded.learningOutcomes[0].competence.taxonomyLevel",
             is(learningOutcomes.get(0).getCompetence().getTaxonomyLevel().name())))
-        .andExpect(jsonPath("$._embedded.learningOutcomes[0].tools[0].value",
-            is(learningOutcomes.get(0).getTools().get(0).getValue())))
-        .andExpect(jsonPath("$._embedded.learningOutcomes[0].tools[1].value",
-            is(learningOutcomes.get(0).getTools().get(1).getValue())))
-        .andExpect(jsonPath("$._embedded.learningOutcomes[0].purpose.value",
-            is(learningOutcomes.get(0).getPurpose().getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[0].requirements[0].value",
+            is(learningOutcomes.get(0).getRequirements().get(0).getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[0].abilities[0].value",
+            is(learningOutcomes.get(0).getAbilities().get(0).getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[0].abilities[1].value",
+            is(learningOutcomes.get(0).getAbilities().get(1).getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[0].purposes[0].value",
+            is(learningOutcomes.get(0).getPurposes().get(0).getValue())))
         .andExpect(jsonPath("$._embedded.learningOutcomes[0]._links.self", notNullValue()))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[1].role.value",
+            is(learningOutcomes.get(1).getRole().getValue())))
         .andExpect(jsonPath("$._embedded.learningOutcomes[1].competence.action",
             is(learningOutcomes.get(1).getCompetence().getAction())))
         .andExpect(jsonPath("$._embedded.learningOutcomes[1].competence.taxonomyLevel",
             is(learningOutcomes.get(1).getCompetence().getTaxonomyLevel().name())))
-        .andExpect(jsonPath("$._embedded.learningOutcomes[1].tools[0].value",
-            is(learningOutcomes.get(1).getTools().get(0).getValue())))
-        .andExpect(jsonPath("$._embedded.learningOutcomes[1].tools[1].value",
-            is(learningOutcomes.get(1).getTools().get(1).getValue())))
-        .andExpect(jsonPath("$._embedded.learningOutcomes[1].purpose.value",
-            is(learningOutcomes.get(1).getPurpose().getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[1].requirements[0].value",
+            is(learningOutcomes.get(1).getRequirements().get(0).getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[1].abilities[0].value",
+            is(learningOutcomes.get(1).getAbilities().get(0).getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[1].abilities[1].value",
+            is(learningOutcomes.get(1).getAbilities().get(1).getValue())))
+        .andExpect(jsonPath("$._embedded.learningOutcomes[1].purposes[0].value",
+            is(learningOutcomes.get(1).getPurposes().get(0).getValue())))
         .andExpect(jsonPath("$._embedded.learningOutcomes[1]._links.self", notNullValue()));
 
   }
@@ -377,18 +408,22 @@ public class AggregateLearningOutcomeTest {
   }
 
   private LearningOutcome buildSampleLearningOutcome() {
+    Role role = new Role("Student");
+
     Competence competence = new Competence(
-        "Die Studierenden können Marketingentscheidungen informationsgestützt treffen",
-        TaxonomyLevel.SYNTHESIS);
+            "Die Studierenden können Marketingentscheidungen informationsgestützt treffen",
+            TaxonomyLevel.SYNTHESIS);
 
-    Tool tool0 = new Tool(
-        "das Makro- und Mikroumfeld des relevanten Marktes so wie das eigenen Unternehmen analysieren");
-    Tool tool1 = new Tool(
-        "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen");
+    Requirement requirement = new Requirement("Alles können", TaxonomyLevel.EVALUATION);
+
+    Ability ability0 = new Ability(
+        "das Makro- und Mikroumfeld des relevanten Marktes so wie das eigenen Unternehmen analysieren", TaxonomyLevel.SYNTHESIS);
+    Ability ability1 = new Ability(
+        "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen", TaxonomyLevel.SYNTHESIS);
     Purpose purpose = new Purpose(
-        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
+        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten", TaxonomyLevel.APPLICATION);
 
-    return new LearningOutcome(competence, Arrays.asList(tool0, tool1), purpose);
+    return new LearningOutcome(role, competence, Arrays.asList(requirement), Arrays.asList(ability0, ability1), Arrays.asList(purpose));
 
   }
 }

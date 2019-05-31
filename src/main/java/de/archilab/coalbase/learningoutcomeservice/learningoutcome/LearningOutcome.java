@@ -26,35 +26,80 @@ import lombok.ToString;
 public class LearningOutcome extends EntityWithUniqueId<LearningOutcome> {
 
   @Setter
+  private Role role;
+
+  @Setter
   private Competence competence;
 
   @ElementCollection
-  private List<Tool> tools;
+  private List<Requirement> requirements;
 
-  @Setter
-  private Purpose purpose;
+  @ElementCollection
+  private List<Ability> abilities;
+
+  @ElementCollection
+  private List<Purpose> purposes;
 
 
-  public void addTool(Tool tool) {
-    if (this.tools == null) {
-      this.tools = new ArrayList<>();
+  public void addAbility(Ability ability) {
+    if (this.abilities == null) {
+      this.abilities = new ArrayList<>();
     }
-    this.tools.add(tool);
+    this.abilities.add(ability);
   }
 
-  public void removeTool(Tool tool) {
-    if (this.tools.isEmpty()) {
-      throw new NoSuchElementException("There are no tools in this learning outcome.");
+  public void removeAbility(Ability ability) {
+    if (this.abilities.isEmpty()) {
+      throw new NoSuchElementException("There are no abilities in this learning outcome.");
     }
-    if (!this.tools.contains(tool)) {
+    if (!this.abilities.contains(ability)) {
       throw new NoSuchElementException(
-          "The tool you want to remove is not present in this learning outcome.");
+          "The ability you want to remove is not present in this learning outcome.");
     }
-    this.tools.remove(tool);
+    this.abilities.remove(ability);
   }
 
-  public List<Tool> getTools() {
-    return Collections.unmodifiableList(this.tools);
+  public void addRequirement(Requirement requirement) {
+    if (this.requirements == null) {
+      this.requirements = new ArrayList<>();
+    }
+    this.requirements.add(requirement);
   }
 
+  public void removeRequirement(Requirement requirement) {
+    if (this.requirements.isEmpty()) {
+      throw new NoSuchElementException("There are no requirements in this learning outcome.");
+    }
+    if (!this.requirements.contains(requirement)) {
+      throw new NoSuchElementException(
+              "The requirement you want to remove is not present in this learning outcome.");
+    }
+    this.requirements.remove(requirement);
+  }
+
+  public void addPurpose(Purpose purpose) {
+    if (this.purposes == null) {
+      this.purposes = new ArrayList<>();
+    }
+    this.purposes.add(purpose);
+  }
+
+  public void removePurpose(Purpose purpose) {
+    if (this.purposes.isEmpty()) {
+      throw new NoSuchElementException("There are no purposes in this learning outcome.");
+    }
+    if (!this.purposes.contains(purpose)) {
+      throw new NoSuchElementException(
+              "The purpose you want to remove is not present in this learning outcome.");
+    }
+    this.purposes.remove(purpose);
+  }
+
+  public List<Ability> getAbilities() {
+    return Collections.unmodifiableList(this.abilities);
+  }
+
+  public List<Purpose> getPurposes() {
+    return Collections.unmodifiableList(this.purposes);
+  }
 }
