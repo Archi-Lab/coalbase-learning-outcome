@@ -1,5 +1,6 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -21,7 +22,7 @@ import lombok.ToString;
 public class LearningSpace extends EntityWithUniqueId<LearningSpace> {
 
   private String title;
-  @OneToOne(targetEntity = LearningOutcome.class)
+  @OneToOne(targetEntity = LearningOutcome.class, cascade = CascadeType.REMOVE)
   private LearningOutcome learningOutcome;
   @OneToOne(targetEntity = LearningSpace.class)
   private LearningSpace requirement;
