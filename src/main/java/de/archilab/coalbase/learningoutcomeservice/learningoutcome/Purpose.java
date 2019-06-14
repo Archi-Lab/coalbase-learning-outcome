@@ -15,10 +15,9 @@ import lombok.Setter;
 public class Purpose {
 
   private String value;
-  private TaxonomyLevel taxonomyLevel;
 
 
   public static boolean isValid(Purpose purpose) {
-    return !purpose.getValue().isEmpty() && purpose.getTaxonomyLevel() != null;
+    return !purpose.getValue().isEmpty();
   }
 }

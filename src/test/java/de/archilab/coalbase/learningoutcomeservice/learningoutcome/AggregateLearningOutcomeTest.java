@@ -262,7 +262,7 @@ public class AggregateLearningOutcomeTest {
     Ability ability = new Ability("Ability", TaxonomyLevel.ANALYSIS);
     learningOutcome.addAbility(ability);
 
-    Purpose purpose = new Purpose("Purpose", TaxonomyLevel.SYNTHESIS);
+    Purpose purpose = new Purpose("Purpose");
     learningOutcome.addPurpose(purpose);
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -420,7 +420,7 @@ public class AggregateLearningOutcomeTest {
     Ability ability1 = new Ability(
         "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen", TaxonomyLevel.SYNTHESIS);
     Purpose purpose = new Purpose(
-        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten", TaxonomyLevel.APPLICATION);
+        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
 
     return new LearningOutcome(role, competence, Arrays.asList(requirement), Arrays.asList(ability0, ability1), Arrays.asList(purpose));
 

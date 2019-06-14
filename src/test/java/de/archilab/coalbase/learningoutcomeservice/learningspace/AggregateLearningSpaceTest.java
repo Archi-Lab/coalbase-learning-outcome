@@ -470,7 +470,7 @@ public class AggregateLearningSpaceTest {
     Ability ability1 = new Ability(
         "SecondTool", TaxonomyLevel.ANALYSIS);
     Purpose purpose = new Purpose(
-        "FirstPurpose", TaxonomyLevel.ANALYSIS);
+        "FirstPurpose");
 
     LearningOutcome firstLearningOutcome = new LearningOutcome(role, competence,
         Arrays.asList(requirement),
@@ -495,7 +495,7 @@ public class AggregateLearningSpaceTest {
     Ability secondAbility1 = new Ability(
         "Konsequenzen für die verschiedenen Bereiche der Marketingpolitik entwerfen", TaxonomyLevel.EVALUATION);
     Purpose secondPurpose = new Purpose(
-        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten", TaxonomyLevel.EVALUATION);
+        "Produkte, Preise, Kommunikation und den Vertrieb bewusst marktorientiert zu gestalten");
 
     LearningOutcome secondLearningOutcome = new LearningOutcome(secondRole,
         secondCompetence,
