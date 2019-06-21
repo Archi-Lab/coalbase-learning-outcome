@@ -1,21 +1,11 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
+import de.archilab.coalbase.learningoutcomeservice.examform.Duration;
+import de.archilab.coalbase.learningoutcomeservice.examform.ExamDescription;
+import de.archilab.coalbase.learningoutcomeservice.examform.ExamType;
+import de.archilab.coalbase.learningoutcomeservice.examform.Schedule;
 import de.archilab.coalbase.learningoutcomeservice.learningoutcome.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -43,18 +33,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.Ability;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -139,6 +131,10 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.title", is(learningSpaceToPost.getTitle())))
         .andExpect(
+            jsonPath("$.examForm.type", is(createExamForm().getType().getType())))
+        .andExpect(
+            jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
+        .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
             jsonPath("$._links.requirement", notNullValue()))
@@ -210,6 +206,10 @@ public class AggregateLearningSpaceTest {
         .contentType(MediaType.APPLICATION_JSON)).andExpect(status().is(201))
         .andExpect(
             jsonPath("$.title", is(learningSpaceToPut.getTitle())))
+        .andExpect(
+            jsonPath("$.examForm.type", is(createExamForm().getType().getType())))
+        .andExpect(
+            jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -345,6 +345,10 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.title", is(learningSpace.getTitle())))
         .andExpect(
+            jsonPath("$.examForm.type", is(createExamForm().getType().getType())))
+        .andExpect(
+            jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
+        .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
             jsonPath("$._links.requirement", notNullValue()))
@@ -410,6 +414,10 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.title", is(learningSpace.getTitle())))
         .andExpect(
+            jsonPath("$.examForm.type", is(createExamForm().getType().getType())))
+        .andExpect(
+            jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
+        .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
             jsonPath("$._links.requirement", notNullValue()))
@@ -431,6 +439,10 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$._embedded.learningSpaces[0].title", is(learningSpaces.get(0).getTitle())))
         .andExpect(
+            jsonPath("$._embedded.learningSpaces[0].examForm.type", is(createExamForm().getType().getType())))
+        .andExpect(
+            jsonPath("$._embedded.learningSpaces[0].examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
+        .andExpect(
             jsonPath("$._embedded.learningSpaces[0]._links.learningOutcome", notNullValue()))
         .andExpect(
             jsonPath("$._embedded.learningSpaces[0]._links.requirement", notNullValue()))
@@ -439,6 +451,10 @@ public class AggregateLearningSpaceTest {
         )
         .andExpect(
             jsonPath("$._embedded.learningSpaces[1].title", is(learningSpaces.get(1).getTitle())))
+        .andExpect(
+            jsonPath("$._embedded.learningSpaces[1].examForm.type", is(createExamForm().getType().getType())))
+        .andExpect(
+            jsonPath("$._embedded.learningSpaces[1].examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
             jsonPath("$._embedded.learningSpaces[1]._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -478,8 +494,8 @@ public class AggregateLearningSpaceTest {
         Arrays.asList(purpose));
     this.learningOutcomeRepository.save(firstLearningOutcome);
 
-    LearningSpace firstLearningSpace = new LearningSpace("FirstLearningSpace",
-        firstLearningOutcome);
+    LearningSpace firstLearningSpace = new LearningSpace("FirstLearningSpace", createExamForm(),
+        firstLearningOutcome, null);
     this.learningSpaceRepository.save(firstLearningSpace);
 
     Role secondRole = new Role("Student");
@@ -504,7 +520,20 @@ public class AggregateLearningSpaceTest {
         Arrays.asList(secondPurpose));
     this.learningOutcomeRepository.save(secondLearningOutcome);
 
-    return new LearningSpace("LearningSpaceWithRequirement", secondLearningOutcome,
+    return new LearningSpace("LearningSpaceWithRequirement", createExamForm(), secondLearningOutcome,
         firstLearningSpace);
+  }
+
+  private static ExamForm createExamForm() {
+    ExamType type = new ExamType("Klausur");
+
+    List<Schedule> schedules = new ArrayList<>();
+    schedules.add(new Schedule("Am Anfang"));
+
+    Duration duration = new Duration(10, 15, "Min");
+
+    ExamDescription description = new ExamDescription("Ist einfach");
+
+    return new ExamForm(type, schedules, duration, description);
   }
 }

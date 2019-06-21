@@ -73,6 +73,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     this.restrictAllChangesToProfessor("learningSpaces", httpSecurity);
     this.restrictAllChangesToProfessor("semesters", httpSecurity);
     this.restrictAllChangesToProfessor("courses", httpSecurity);
+    this.restrictAllChangesToProfessor("predefinedExamForms", httpSecurity);
     this.fallbackHttpSecuritySettings(httpSecurity);
   }
 
