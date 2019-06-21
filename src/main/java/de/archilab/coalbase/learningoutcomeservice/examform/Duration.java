@@ -16,7 +16,8 @@ public class Duration {
 
     private static final int MAX_LENGTH = 30;
 
-    private int minValue, maxValue;
+    private int minValue;
+    private int maxValue;
 
     @Size(max = MAX_LENGTH)
     private String unit;
@@ -26,8 +27,7 @@ public class Duration {
     @PreUpdate
     public void checkValid() {
         if (minValue < 0 || maxValue < 0 || (maxValue < minValue && maxValue != 0)) {
-            throw new IllegalArgumentException(String
-                    .format("MaxValue has to be greater than MinValue and not negative"));
+            throw new IllegalArgumentException("MaxValue has to be greater than MinValue and not negative");
         }
     }
 }
