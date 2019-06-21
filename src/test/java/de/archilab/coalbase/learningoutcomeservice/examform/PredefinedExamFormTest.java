@@ -11,30 +11,24 @@ import static org.junit.Assert.*;
 @Transactional
 public class PredefinedExamFormTest {
 
+  private static final ExamType type1 = new ExamType("Klausur");
+  private static final ExamType type2 = new ExamType("Diskussion");
+  private static final Schedule schedule = new Schedule("Am Anfang");
+  private static final Duration duration = new Duration(10, 15, "Min");
+  private static final ExamDescription description = new ExamDescription("Ist einfach");
+
   private static PredefinedExamForm createExamForm1() {
-    ExamType type = new ExamType("Klausur");
-
     List<Schedule> schedules = new ArrayList<>();
-    schedules.add(new Schedule("Am Anfang"));
+    schedules.add(schedule);
 
-    Duration duration = new Duration(10, 15, "Min");
-
-    ExamDescription description = new ExamDescription("Ist einfach");
-
-    return new PredefinedExamForm(type, schedules, duration, description);
+    return new PredefinedExamForm(type1, schedules, duration, description);
   }
 
   private static PredefinedExamForm createExamForm2() {
-    ExamType type = new ExamType("Diskussion");
-
     List<Schedule> schedules = new ArrayList<>();
-    schedules.add(new Schedule("Am Anfang"));
+    schedules.add(schedule);
 
-    Duration duration = new Duration(10, 15, "Min");
-
-    ExamDescription description = new ExamDescription("Ist einfach");
-
-    return new PredefinedExamForm(type, schedules, duration, description);
+    return new PredefinedExamForm(type2, schedules, duration, description);
   }
 
   @Test
@@ -42,12 +36,12 @@ public class PredefinedExamFormTest {
     PredefinedExamForm predefinedExamForm = createExamForm1();
     assertNotNull(predefinedExamForm);
 
-    assertEquals(predefinedExamForm.getType(), new ExamType("Klausur"));
+    assertEquals(predefinedExamForm.getType(), type1);
     assertEquals(predefinedExamForm.getSchedules().size(), 1);
-    assertEquals(predefinedExamForm.getDescription(), new ExamDescription("Ist einfach"));
-    assertEquals(predefinedExamForm.getDuration().getMinValue(), 10);
-    assertEquals(predefinedExamForm.getDuration().getMaxValue(), 15);
-    assertEquals(predefinedExamForm.getDuration().getUnit(), "Min");
+    assertEquals(predefinedExamForm.getDescription(), description);
+    assertEquals(predefinedExamForm.getDuration().getMinValue(), duration.getMinValue());
+    assertEquals(predefinedExamForm.getDuration().getMaxValue(), duration.getMaxValue());
+    assertEquals(predefinedExamForm.getDuration().getUnit(), duration.getUnit());
   }
 
   @Test
@@ -55,7 +49,7 @@ public class PredefinedExamFormTest {
     PredefinedExamForm predefinedExamForm1 = createExamForm1();
     assertNotNull(predefinedExamForm1);
 
-    assertEquals(predefinedExamForm1.getType(), new ExamType("Klausur"));
+    assertEquals(predefinedExamForm1.getType(), type1);
     assertEquals(predefinedExamForm1.getSchedules().size(), 1);
 
     PredefinedExamForm predefinedExamForm2 = createExamForm2();
