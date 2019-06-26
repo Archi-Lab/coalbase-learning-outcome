@@ -3,7 +3,6 @@ package de.archilab.coalbase.learningoutcomeservice.examform;
 import lombok.*;
 
 import javax.persistence.Embeddable;
-import javax.validation.constraints.Size;
 
 @Embeddable
 @Data
@@ -14,6 +13,11 @@ public class ExamType {
 
     private static final int MAX_LENGTH = 50;
 
-    @Size(max = MAX_LENGTH)
     private String type;
+
+    public void checkValid() {
+        if (type.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("Type length is too long");
+        }
+    }
 }

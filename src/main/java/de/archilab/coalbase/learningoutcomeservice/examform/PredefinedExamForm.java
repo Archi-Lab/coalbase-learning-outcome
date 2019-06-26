@@ -6,6 +6,9 @@ import lombok.*;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +23,7 @@ public class PredefinedExamForm extends EntityWithUniqueId<PredefinedExamForm> {
     private ExamType type;
 
     @ElementCollection
-    private List<Schedule> schedules;
+    private List<Schedule> schedules = new ArrayList<>();
 
     private Duration duration;
 
@@ -29,5 +32,16 @@ public class PredefinedExamForm extends EntityWithUniqueId<PredefinedExamForm> {
 
     public List<Schedule> getSchedules() {
         return Collections.unmodifiableList(schedules);
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void checkValid() {
+        type.checkValid();
+        for (Schedule schedule : schedules) {
+            schedule.checkValid();
+        }
+        duration.checkValid();
+        description.checkValid();
     }
 }

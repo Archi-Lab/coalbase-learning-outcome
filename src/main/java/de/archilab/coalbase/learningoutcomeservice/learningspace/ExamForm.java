@@ -9,6 +9,8 @@ import lombok.*;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,5 +35,16 @@ public class ExamForm {
 
     public List<Schedule> getSchedules() {
         return Collections.unmodifiableList(schedules);
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void checkValid() {
+        type.checkValid();
+        for (Schedule schedule : schedules) {
+            schedule.checkValid();
+        }
+        duration.checkValid();
+        description.checkValid();
     }
 }

@@ -3,7 +3,6 @@ package de.archilab.coalbase.learningoutcomeservice.examform;
 import lombok.*;
 
 import javax.persistence.Embeddable;
-import javax.validation.constraints.Size;
 
 @Embeddable
 @Data
@@ -14,6 +13,11 @@ public class ExamDescription {
 
     private static final int MAX_LENGTH = 2000;
 
-    @Size(max = MAX_LENGTH)
     private String description;
+
+    public void checkValid() {
+        if (description.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("Description length is too long");
+        }
+    }
 }
