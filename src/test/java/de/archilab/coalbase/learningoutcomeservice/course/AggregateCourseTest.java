@@ -12,6 +12,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import de.archilab.coalbase.learningoutcomeservice.examform.Duration;
+import de.archilab.coalbase.learningoutcomeservice.examform.ExamDescription;
+import de.archilab.coalbase.learningoutcomeservice.examform.ExamType;
+import de.archilab.coalbase.learningoutcomeservice.examform.Schedule;
+import de.archilab.coalbase.learningoutcomeservice.learningspace.ExamForm;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -380,9 +385,21 @@ public class AggregateCourseTest {
   }
 
   private LearningSpace createLearningSpace() {
-    final LearningSpace learningSpace = new LearningSpace("LearningSpaceTest");
+    final LearningSpace learningSpace = new LearningSpace("LearningSpaceTest", createExamForm());
     this.learningSpaceRepository.save(learningSpace);
     return learningSpace;
   }
 
+  private static ExamForm createExamForm() {
+    ExamType type = new ExamType("Klausur");
+
+    List<Schedule> schedules = new ArrayList<>();
+    schedules.add(new Schedule("Am Anfang"));
+
+    Duration duration = new Duration(10, 15, "Min");
+
+    ExamDescription description = new ExamDescription("Ist einfach");
+
+    return new ExamForm(type, schedules, duration, description);
+  }
 }
