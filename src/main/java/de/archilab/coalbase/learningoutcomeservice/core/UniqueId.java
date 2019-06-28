@@ -2,6 +2,7 @@ package de.archilab.coalbase.learningoutcomeservice.core;
 
 import java.io.Serializable;
 import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

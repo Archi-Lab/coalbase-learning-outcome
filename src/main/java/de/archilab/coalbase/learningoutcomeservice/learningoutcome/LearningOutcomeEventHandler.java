@@ -1,7 +1,5 @@
 package de.archilab.coalbase.learningoutcomeservice.learningoutcome;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import de.archilab.coalbase.learningoutcomeservice.kafka.KafkaMessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.annotation.HandleAfterCreate;
@@ -9,6 +7,10 @@ import org.springframework.data.rest.core.annotation.HandleAfterDelete;
 import org.springframework.data.rest.core.annotation.HandleAfterSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.archilab.coalbase.learningoutcomeservice.kafka.KafkaMessageProducer;
 
 @Component
 @RepositoryEventHandler(LearningOutcome.class)

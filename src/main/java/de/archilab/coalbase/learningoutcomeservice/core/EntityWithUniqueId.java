@@ -2,6 +2,7 @@ package de.archilab.coalbase.learningoutcomeservice.core;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.MappedSuperclass;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

@@ -17,7 +17,8 @@ public class CustomCorsConfiguration {
   private final String allowedMethods;
 
   public CustomCorsConfiguration(@Value("${security.cors.allowed-origins}") String allowedOrigins,
-      @Value("${security.cors.allowed-headers}") String allowedHeaders, @Value("${security.cors.allowed-methods}") String allowedMethods) {
+      @Value("${security.cors.allowed-headers}") String allowedHeaders,
+      @Value("${security.cors.allowed-methods}") String allowedMethods) {
     this.allowedOrigins = allowedOrigins;
     this.allowedHeaders = allowedHeaders;
     this.allowedMethods = allowedMethods;

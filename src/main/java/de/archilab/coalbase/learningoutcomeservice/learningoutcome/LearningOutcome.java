@@ -72,7 +72,7 @@ public class LearningOutcome extends EntityWithUniqueId<LearningOutcome> {
     }
     if (!this.requirements.contains(requirement)) {
       throw new NoSuchElementException(
-              "The requirement you want to remove is not present in this learning outcome.");
+          "The requirement you want to remove is not present in this learning outcome.");
     }
     this.requirements.remove(requirement);
   }
@@ -90,7 +90,7 @@ public class LearningOutcome extends EntityWithUniqueId<LearningOutcome> {
     }
     if (!this.purposes.contains(purpose)) {
       throw new NoSuchElementException(
-              "The purpose you want to remove is not present in this learning outcome.");
+          "The purpose you want to remove is not present in this learning outcome.");
     }
     this.purposes.remove(purpose);
   }

@@ -1,8 +1,9 @@
 package de.archilab.coalbase.learningoutcomeservice.core;
 
-import java.io.Serializable;
 import org.springframework.data.rest.webmvc.spi.BackendIdConverter;
 import org.springframework.stereotype.Component;
+
+import java.io.Serializable;
 
 @Component
 public class EntityWithUniqueIdConverter implements BackendIdConverter {

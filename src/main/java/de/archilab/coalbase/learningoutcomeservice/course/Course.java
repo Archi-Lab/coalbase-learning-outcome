@@ -35,7 +35,8 @@ public class Course extends EntityWithUniqueId<Course> {
   @JoinColumn(name = "course_uuid")
   private List<LearningSpace> learningSpaces;
 
-  public Course(String shortTitle, String title, String description, List<LearningSpace> learningSpaces) {
+  public Course(String shortTitle, String title, String description,
+      List<LearningSpace> learningSpaces) {
     this.shortTitle = shortTitle;
     this.title = title;
     this.description = description;

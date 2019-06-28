@@ -1,12 +1,17 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
-import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
-import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
-import lombok.*;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+
+import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
+import de.archilab.coalbase.learningoutcomeservice.learningoutcome.LearningOutcome;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
