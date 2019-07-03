@@ -17,6 +17,9 @@ public class PredefinedExamFormSamples {
 
   @PostConstruct
   private void persistSamples() {
+    String delivery = "Abgabe";
+    String minutes = "Min";
+
     // Schedule Block 1
     List<Schedule> schedules1 = new ArrayList<>();
     schedules1.add(new Schedule("Während des Teilmodulblocks"));
@@ -43,27 +46,27 @@ public class PredefinedExamFormSamples {
 
     // Coding Session
     PredefinedExamForm predefinedExamForm = createPredefinedExamForm("Coding Session", schedules1,
-        30, 180, "Min",
+        30, 180, minutes,
         "In den Live Coding Sessions werden die Prüflinge vor die Aufgabe gestellt ein Softwareartefakt (z.B. einen Algorithmus) in begrenzter Zeit zu entwickeln. Grundlage sind hierbei vom Lehrenden gegebene funktionale Anforderungen oder User Stories. Die Bewertung gründet sich auf im Vorfeld klar kommunizierten, transparenten Kriterien wie etwa Erfüllungsgrad der Anforderungen (Bestehen von Unit-Tests) oder Qualität des Codes (Statische Codeanalyse).");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Diskussion
-    predefinedExamForm = createPredefinedExamForm("Diskussion", schedules1, 30, 60, "Min",
+    predefinedExamForm = createPredefinedExamForm("Diskussion", schedules1, 30, 60, minutes,
         "Die Prüflinge diskutieren in Gruppen untereinander und/oder zusammen mit Gästen aus der Wirtschaft ein durch den Lehrenden gestelltes Thema des jeweiligen Fachgebiet. Die Prüflinge stellen so ihre Kenntnisse der Fachsprache und Konzepte des jeweiligen Teilmoduls unter Beweis.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Dokumentation
-    predefinedExamForm = createPredefinedExamForm("Dokumentation", schedules2, 0, 0, "Abgabe",
+    predefinedExamForm = createPredefinedExamForm("Dokumentation", schedules2, 0, 0, delivery,
         "Die Prüflinge erstellen eine Dokumentation für ein im praktischen Teil des Teilmoduls entwickeltes Produkt mit gängigen agilen Dokumentationsmethoden. Die Dokumentation thematisiert hier entweder das Produkt selbst und/oder dokumentiert den Entwicklungsprozess.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Essay
-    predefinedExamForm = createPredefinedExamForm("Essay", schedules2, 0, 0, "Abgabe",
+    predefinedExamForm = createPredefinedExamForm("Essay", schedules2, 0, 0, delivery,
         "Die Studierenden erstellen eine Abhandlung über ein wissenschaftliches, kulturelles oder gesellschaftliches Phänomene und stellen ihre subjektive Meinung über das Thema dar. Bewertet wird hierbei nicht die dargelegte Meinung des Studierendnen, sondern logische Begründung und Herleitung dieser.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Fachgespräch
-    predefinedExamForm = createPredefinedExamForm("Fachgespräch", schedules3, 10, 15, "Min",
+    predefinedExamForm = createPredefinedExamForm("Fachgespräch", schedules3, 10, 15, minutes,
         "Der Prüfling stellt in einem kurzen, fachlichem Vieraugengespräch mit dem Lehrenden seinen Umgang mit der Fachsprache und grundlegenden Konzepten des jeweiligen Teilmoduls unter Beweis. Es thematisiert dabei zumeist ein im Teilmodul durchgeführtes Projekt und reflektiert die Beteiligung des Studierenden am Arbeits- und Entwicklungsprozesses.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
@@ -74,54 +77,54 @@ public class PredefinedExamFormSamples {
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Mündliche Prüfung
-    predefinedExamForm = createPredefinedExamForm("Mündliche Prüfung", schedules3, 30, 0, "Min",
+    predefinedExamForm = createPredefinedExamForm("Mündliche Prüfung", schedules3, 30, 0, minutes,
         "In einer mündlichen Prüfung stellt der Prüfling sein Wissen über Methoden und Konzepte des jeweiligen Teilmoduls durch Beantwortung von durch den Lerhenden gestellten Fragen unter Beweis.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Multiple Choice/Lückentext
     predefinedExamForm = createPredefinedExamForm("Multiple Choice/Lückentext", schedules1, 10, 30,
-        "Min",
+        minutes,
         "Im Multiple Choice bzw. Lückentext soll der Prüfling sein Wissen über Konzepte des jeweiligen Fachgebiets unter Beweis stellen - anders als bei der schriftlichen Prüfung wird hierbei auf Freitextantworten verzichtet. Der Test kann hierbei auch zur Bewertung von Zwischenständen eines Teilmoduls genutzt werden, beispielsweise am Ende der ersten Woche des Teilmoduls.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Pitch
-    predefinedExamForm = createPredefinedExamForm("Pitch", schedules1, 5, 10, "Min",
+    predefinedExamForm = createPredefinedExamForm("Pitch", schedules1, 5, 10, minutes,
         "Die Studierenden präsentieren eine im Vorfeld entwickelte Produkt- oder Geschäftsideen und geben dem Lehrenden, Kommilitionen und Gästen in kurzer Zeit einen zusammenfassenden, informativen Überblick.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Portfolio
-    predefinedExamForm = createPredefinedExamForm("Portfolio", schedules4, 0, 0, "Abgabe",
+    predefinedExamForm = createPredefinedExamForm("Portfolio", schedules4, 0, 0, delivery,
         "Die Studierenden dokumentieren semesterbegleitend ihre gemeinnützigen Tätigkeiten im Modul »Community & Reflection« und evaluieren hierbei kritisch ihre eigene Leistung und Lernerfolg.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Poster Session
-    predefinedExamForm = createPredefinedExamForm("Poster Session", schedules1, 5, 10, "Min",
+    predefinedExamForm = createPredefinedExamForm("Poster Session", schedules1, 5, 10, minutes,
         "Die Studierenden erstellen im Vorfeld der Session ein (wissenschaftliches) Poster zu einem erarbeiteten Produkt oder Thema und präsentieren ihre Ergebnisse sowohl dem Lehrendnen als auch sonstigen Gäasten und Kommilitionen. Die eigentliche Prüfungssituation mit dem Lehrenden dauert hierbei im Regelfall 5-10 Min, die Session an sich kann dabei aber durchaus länger dauern. Der Lehrende kann dabei neben seiner eigenen Bewertung des Ergebnisses auch das Feedback von anderen Gästen der Poster Session einbeziehen.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Präsentation
-    predefinedExamForm = createPredefinedExamForm("Präsentation", schedules1, 10, 20, "Min",
+    predefinedExamForm = createPredefinedExamForm("Präsentation", schedules1, 10, 20, minutes,
         "Der Prüfling präsentiert dem Lehrenden und ggf. anderen Zuhörern ein von ihm erarbeitetes Thema oder \"fertiges\" Produkt und hinterfragt dabei kritisch sowohl das Ergebnis als auch den Arbeits- und Entwicklungsprozess.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Präsentation Work in Progress
     predefinedExamForm = createPredefinedExamForm("Präsentation Work in Progress", schedules1, 10,
-        20, "Min",
+        20, minutes,
         "Die Studierenden präsentieren hier den derzeitigen Entwicklungständ eines größeren Produkts in Form eines Minimum Viable Product und stellen so unter Beweis, dass ihr Entwicklungsinkrement sich ständig in einem funktionsfähigen Zustand befindet. Ziel hierbei ist es vor Allem frühzeitiges Feedback durch die Nutzer einzuholen und auf sich änderende Anforderungen agil reagieren zu können. Bewertet wird hierbei sowohl der aktuelle Zwischenstand als auch die Studenden erhobenen Feedbackergebnisse und geplante Änderungen/nächste Schritte.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Produktabgabe
-    predefinedExamForm = createPredefinedExamForm("Produktabgabe", schedules5, 0, 0, "Abgabe",
+    predefinedExamForm = createPredefinedExamForm("Produktabgabe", schedules5, 0, 0, delivery,
         "Die Studierenden entwickeln allein oder im Team Soft- und Hardwareprodukte, die durch den Lehrenden anhand von gängigen (Software-)Qualitätskriterien bewertet werden.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Projektbericht
-    predefinedExamForm = createPredefinedExamForm("Projektbericht", schedules2, 0, 0, "Abgabe",
+    predefinedExamForm = createPredefinedExamForm("Projektbericht", schedules2, 0, 0, delivery,
         "Im Projektbericht stellen die Studierenden den Entwicklungsprozess eines Projekts dar und hinterfragen diesen kritisch.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
 
     // Video
-    predefinedExamForm = createPredefinedExamForm("Video", schedules2, 0, 0, "Abgabe",
+    predefinedExamForm = createPredefinedExamForm("Video", schedules2, 0, 0, delivery,
         "Die Studierenden erstellen ein zusammenfassendes Image- oder Werbevideo zu einem im Vorfeld erarbeiteten Produkt.");
     addPredefinedExamFormIfNotExist(predefinedExamForm);
   }

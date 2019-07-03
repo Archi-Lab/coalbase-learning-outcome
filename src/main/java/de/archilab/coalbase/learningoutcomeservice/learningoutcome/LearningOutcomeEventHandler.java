@@ -2,18 +2,17 @@ package de.archilab.coalbase.learningoutcomeservice.learningoutcome;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.rest.core.annotation.HandleAfterCreate;
-import org.springframework.data.rest.core.annotation.HandleAfterDelete;
-import org.springframework.data.rest.core.annotation.HandleAfterSave;
-import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
+
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.archilab.coalbase.learningoutcomeservice.kafka.KafkaMessageProducer;
 
 @Component
-@RepositoryEventHandler(LearningOutcome.class)
 public class LearningOutcomeEventHandler {
 
   private final String topic;
@@ -27,21 +26,21 @@ public class LearningOutcomeEventHandler {
     this.topic = topic;
   }
 
-  @HandleAfterCreate
+  @PostPersist
   public void handleLearningOutcomeCreate(LearningOutcome learningOutcome)
       throws JsonProcessingException {
     this.kafkaMessageProducer.send(this.topic,
         buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.CREATED));
   }
 
-  @HandleAfterSave
+  @PostUpdate
   public void handleLearningOutcomeSave(LearningOutcome learningOutcome)
       throws JsonProcessingException {
     this.kafkaMessageProducer.send(this.topic,
         buildLearningOutcomeDomainEvent(learningOutcome, LearningOutcomeEventType.UPDATED));
   }
 
-  @HandleAfterDelete
+  @PostRemove
   public void handleLearningOutcomeDelete(LearningOutcome learningOutcome)
       throws JsonProcessingException {
     this.kafkaMessageProducer.send(this.topic,
@@ -52,5 +51,4 @@ public class LearningOutcomeEventHandler {
       LearningOutcome learningOutcome, LearningOutcomeEventType eventType) {
     return new LearningOutcomeDomainEvent(learningOutcome.getId(), eventType);
   }
-
 }

@@ -43,6 +43,8 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import javax.persistence.EntityManager;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext(classMode = BEFORE_CLASS)
@@ -63,6 +65,9 @@ public class AggregateLearningOutcomeTest {
 
   @Autowired
   private LearningOutcomeRepository learningOutcomeRepository;
+
+  @Autowired
+  private EntityManager entityManager;
 
   @BeforeClass
   public static void setup() {
@@ -101,6 +106,7 @@ public class AggregateLearningOutcomeTest {
   @Test
   @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void createLearningOutcome() throws Exception {
+    AggregateLearningOutcomeTest.records.clear(); // Old Events have to be cleared
 
     LearningOutcome learningOutcomeToPost = this.buildSampleLearningOutcome();
 
@@ -170,6 +176,8 @@ public class AggregateLearningOutcomeTest {
   @Test
   @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void putLearningOutcome() throws Exception {
+    AggregateLearningOutcomeTest.records.clear(); // Old Events have to be cleared
+
     LearningOutcome learningOutcomeToPut = this.buildSampleLearningOutcome();
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -214,13 +222,17 @@ public class AggregateLearningOutcomeTest {
     assertThat(savedLearningOutcome.getPurposes().get(0))
             .isEqualTo(learningOutcomeToPut.getPurposes().get(0));
 
+    entityManager.flush(); // Will force data to be persisted and events to trigger
+    AggregateLearningOutcomeTest.records
+        .poll(10, TimeUnit.SECONDS);
+
     /*Test kafka message */
     ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
         .poll(10, TimeUnit.SECONDS);
     LearningOutcomeDomainEvent learningOutcomeDomainEvent = objectMapper
         .readValue(record.value(), LearningOutcomeDomainEvent.class);
     assertThat(learningOutcomeDomainEvent.getEventType())
-        .isEqualTo(LearningOutcomeEventType.CREATED.name());
+        .isEqualTo(LearningOutcomeEventType.UPDATED.name());
     assertThat(learningOutcomeDomainEvent.getLearningOutcomeIdentifier())
         .isEqualTo(savedLearningOutcome.getId());
   }
@@ -240,7 +252,10 @@ public class AggregateLearningOutcomeTest {
   @Test
   @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void patchLearningOutcome() throws Exception {
+    AggregateLearningOutcomeTest.records.clear(); // Old Events have to be cleared
+
     UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
+
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
 
@@ -276,6 +291,10 @@ public class AggregateLearningOutcomeTest {
         .andExpect(jsonPath("$.purposes[0].value", is(learningOutcome.getPurposes().get(0).getValue())))
         .andExpect(jsonPath("$._links.self", notNullValue()));
 
+    entityManager.flush();
+    AggregateLearningOutcomeTest.records
+      .poll(10, TimeUnit.SECONDS);
+
     /*Test kafka message */
     ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records
         .poll(10, TimeUnit.SECONDS);
@@ -290,7 +309,10 @@ public class AggregateLearningOutcomeTest {
   @Test
   @WithMockUser(username = "testProfessor", roles = {"professor"})
   public void deleteLearningOutcome() throws Exception {
+    AggregateLearningOutcomeTest.records.clear(); // Old Events have to be cleared
+
     UniqueId<LearningOutcome> identifier = this.createLearningOutcomeToRepo();
+
     Optional<LearningOutcome> optionalLearningOutcome = this.learningOutcomeRepository
         .findById(identifier);
     assertThat(optionalLearningOutcome.isPresent()).isTrue();
@@ -303,6 +325,10 @@ public class AggregateLearningOutcomeTest {
     Optional<LearningOutcome> optionalLearningOutcomeDeleted = this.learningOutcomeRepository
         .findById(identifier);
     assertThat(optionalLearningOutcomeDeleted.isPresent()).isFalse();
+
+    entityManager.flush();
+    AggregateLearningOutcomeTest.records
+        .poll(10, TimeUnit.SECONDS);
 
     /*Test kafka message */
     ConsumerRecord<String, String> record = AggregateLearningOutcomeTest.records

@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 
 import de.archilab.coalbase.learningoutcomeservice.core.EntityWithUniqueId;
 import lombok.AccessLevel;
@@ -19,6 +20,7 @@ import lombok.ToString;
 
 
 @Entity
+@EntityListeners(LearningOutcomeEventHandler.class)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

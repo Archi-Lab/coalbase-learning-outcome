@@ -1,6 +1,5 @@
 package de.archilab.coalbase.learningoutcomeservice.keycloak;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,9 +11,6 @@ import java.security.Principal;
 @RestController
 @CrossOrigin("*")
 public class KeycloakTestController {
-
-  private static final org.slf4j.Logger LOGGER = LoggerFactory
-      .getLogger(KeycloakTestController.class);
 
   @RequestMapping(value = "helloworld", method = RequestMethod.GET)
   public String getMyTestResource() {
