@@ -135,7 +135,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
+            jsonPath("$.examForm.scope.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -213,7 +213,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
+            jsonPath("$.examForm.scope.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -353,7 +353,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
+            jsonPath("$.examForm.scope.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -424,7 +424,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
+            jsonPath("$.examForm.scope.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -451,7 +451,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$._embedded.learningSpaces[0].examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$._embedded.learningSpaces[0].examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
+            jsonPath("$._embedded.learningSpaces[0].examForm.scope.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._embedded.learningSpaces[0]._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -465,7 +465,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$._embedded.learningSpaces[1].examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$._embedded.learningSpaces[1].examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
+            jsonPath("$._embedded.learningSpaces[1].examForm.scope.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._embedded.learningSpaces[1]._links.learningOutcome", notNullValue()))
         .andExpect(
