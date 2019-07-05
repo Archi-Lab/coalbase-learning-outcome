@@ -2,7 +2,7 @@ package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.archilab.coalbase.learningoutcomeservice.core.UniqueId;
-import de.archilab.coalbase.learningoutcomeservice.examform.Duration;
+import de.archilab.coalbase.learningoutcomeservice.examform.Scope;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamDescription;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamType;
 import de.archilab.coalbase.learningoutcomeservice.examform.Schedule;
@@ -135,7 +135,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getDuration().getMinValue())))
+            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -213,7 +213,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getDuration().getMinValue())))
+            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -353,7 +353,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getDuration().getMinValue())))
+            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -424,7 +424,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$.examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$.examForm.duration.minValue", is(createExamForm().getDuration().getMinValue())))
+            jsonPath("$.examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -451,7 +451,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$._embedded.learningSpaces[0].examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$._embedded.learningSpaces[0].examForm.duration.minValue", is(createExamForm().getDuration().getMinValue())))
+            jsonPath("$._embedded.learningSpaces[0].examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._embedded.learningSpaces[0]._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -465,7 +465,7 @@ public class AggregateLearningSpaceTest {
         .andExpect(
             jsonPath("$._embedded.learningSpaces[1].examForm.schedules[0].value", is(createExamForm().getSchedules().get(0).getValue())))
         .andExpect(
-            jsonPath("$._embedded.learningSpaces[1].examForm.duration.minValue", is(createExamForm().getDuration().getMinValue())))
+            jsonPath("$._embedded.learningSpaces[1].examForm.duration.minValue", is(createExamForm().getScope().getMinValue())))
         .andExpect(
             jsonPath("$._embedded.learningSpaces[1]._links.learningOutcome", notNullValue()))
         .andExpect(
@@ -541,10 +541,10 @@ public class AggregateLearningSpaceTest {
     List<Schedule> schedules = new ArrayList<>();
     schedules.add(new Schedule("Am Anfang"));
 
-    Duration duration = new Duration(10, 15, "Min");
+    Scope scope = new Scope(10, 15, "Min");
 
     ExamDescription description = new ExamDescription("Ist einfach");
 
-    return new ExamForm(type, schedules, duration, description);
+    return new ExamForm(type, schedules, scope, description);
   }
 }

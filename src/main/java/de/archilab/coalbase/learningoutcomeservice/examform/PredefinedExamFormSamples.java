@@ -141,10 +141,10 @@ public class PredefinedExamFormSamples {
       int minValue, int maxValue, String unit, String description) {
     ExamType typeWrapper = new ExamType(type);
 
-    Duration durationWrapper = new Duration(minValue, maxValue, unit);
+    Scope scopeWrapper = new Scope(minValue, maxValue, unit);
 
     ExamDescription descriptionWrapper = new ExamDescription(description);
 
-    return new PredefinedExamForm(typeWrapper, schedules, durationWrapper, descriptionWrapper);
+    return new PredefinedExamForm(typeWrapper, schedules, scopeWrapper, descriptionWrapper);
   }
 }

@@ -11,10 +11,10 @@ import javax.persistence.PreUpdate;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import de.archilab.coalbase.learningoutcomeservice.examform.Duration;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamDescription;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamType;
 import de.archilab.coalbase.learningoutcomeservice.examform.Schedule;
+import de.archilab.coalbase.learningoutcomeservice.examform.Scope;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,7 +34,7 @@ public class ExamForm {
   @ElementCollection
   private List<Schedule> schedules = new ArrayList<>();
 
-  private Duration duration;
+  private Scope scope;
 
   @JsonUnwrapped
   private ExamDescription description;
@@ -50,7 +50,7 @@ public class ExamForm {
     for (Schedule schedule : schedules) {
       schedule.checkValid();
     }
-    duration.checkValid();
+    scope.checkValid();
     description.checkValid();
   }
 }

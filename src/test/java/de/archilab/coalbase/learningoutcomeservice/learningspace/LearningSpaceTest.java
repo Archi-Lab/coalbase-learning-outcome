@@ -1,6 +1,6 @@
 package de.archilab.coalbase.learningoutcomeservice.learningspace;
 
-import de.archilab.coalbase.learningoutcomeservice.examform.Duration;
+import de.archilab.coalbase.learningoutcomeservice.examform.Scope;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamDescription;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamType;
 import de.archilab.coalbase.learningoutcomeservice.examform.Schedule;
@@ -18,17 +18,17 @@ import static org.junit.Assert.assertNotNull;
 @Transactional
 public class LearningSpaceTest {
 
-  private static final LearningOutcome learningOutcome = new LearningOutcome(
+  private static final LearningOutcome LEARNING_OUTCOME = new LearningOutcome(
       new Role("Student"), new Competence("actionValue", TaxonomyLevel.SYNTHESIS),
       Collections.<Requirement>emptyList(), Collections.<Ability>emptyList(),
       Collections.<Purpose>emptyList());
 
-  private static final LearningOutcome secondLearningOutcome = new LearningOutcome(
+  private static final LearningOutcome SECOND_LEARNING_OUTCOME = new LearningOutcome(
           new Role("Student"), new Competence("newActionValue", TaxonomyLevel.ANALYSIS),
           Collections.<Requirement>emptyList(), Collections.<Ability>emptyList(),
           Collections.<Purpose>emptyList());
 
-  private static final ExamForm examForm = createExamForm();
+  private static final ExamForm EXAM_FORM = createExamForm();
 
   private static ExamForm createExamForm() {
     ExamType type = new ExamType("Klausur");
@@ -36,29 +36,29 @@ public class LearningSpaceTest {
     List<Schedule> schedules = new ArrayList<>();
     schedules.add(new Schedule("Am Anfang"));
 
-    Duration duration = new Duration(10, 15, "Min");
+    Scope scope = new Scope(10, 15, "Min");
 
     ExamDescription description = new ExamDescription("Ist einfach");
 
-    return new ExamForm(type, schedules, duration, description);
+    return new ExamForm(type, schedules, scope, description);
   }
 
   @Test
   public void createLearningSpace() {
-    LearningSpace learningSpace = new LearningSpace("name", examForm);
+    LearningSpace learningSpace = new LearningSpace("name", EXAM_FORM);
     assertNotNull(learningSpace);
 
     assertEquals(learningSpace.getTitle(), "name");
-    assertEquals(learningSpace.getExamForm(), examForm);
+    assertEquals(learningSpace.getExamForm(), EXAM_FORM);
   }
 
   @Test
   public void createLearningSpaceWithLearningOutcome() {
-    LearningSpace learningSpace = new LearningSpace("name", learningOutcome);
+    LearningSpace learningSpace = new LearningSpace("name", LEARNING_OUTCOME);
     assertNotNull(learningSpace);
 
     assertEquals(learningSpace.getTitle(), "name");
-    assertEquals(learningSpace.getLearningOutcome(), learningOutcome);
+    assertEquals(learningSpace.getLearningOutcome(), LEARNING_OUTCOME);
   }
 
 
@@ -75,24 +75,24 @@ public class LearningSpaceTest {
 
   @Test
   public void createLearningSpaceWithRequirmentAndLearningOutcome() {
-    LearningSpace learningSpaceWithoutRequirment = new LearningSpace("name", learningOutcome);
+    LearningSpace learningSpaceWithoutRequirment = new LearningSpace("name", LEARNING_OUTCOME);
 
-    LearningSpace learningSpace = new LearningSpace("secondName", examForm, learningOutcome, learningSpaceWithoutRequirment);
+    LearningSpace learningSpace = new LearningSpace("secondName", EXAM_FORM, LEARNING_OUTCOME, learningSpaceWithoutRequirment);
     assertNotNull(learningSpace);
 
     assertEquals(learningSpace.getTitle(), "secondName");
-    assertEquals(learningSpace.getLearningOutcome(), learningOutcome);
+    assertEquals(learningSpace.getLearningOutcome(), LEARNING_OUTCOME);
     assertEquals(learningSpace.getRequirement(), learningSpaceWithoutRequirment);
   }
 
   @Test
   public void updateLearningOutcome() {
-    LearningSpace learningSpace = new LearningSpace("name", learningOutcome);
+    LearningSpace learningSpace = new LearningSpace("name", LEARNING_OUTCOME);
     assertNotNull(learningSpace);
 
-    assertEquals(learningSpace.getLearningOutcome(), learningOutcome);
-    learningSpace.setLearningOutcome(secondLearningOutcome);
-    assertEquals(learningSpace.getLearningOutcome(), secondLearningOutcome);
+    assertEquals(learningSpace.getLearningOutcome(), LEARNING_OUTCOME);
+    learningSpace.setLearningOutcome(SECOND_LEARNING_OUTCOME);
+    assertEquals(learningSpace.getLearningOutcome(), SECOND_LEARNING_OUTCOME);
   }
 
   @Test

@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter(AccessLevel.NONE)
-public class Duration {
+public class Scope {
 
   private static final int MAX_LENGTH = 50;
 
