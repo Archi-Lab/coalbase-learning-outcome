@@ -31,7 +31,7 @@ public class PredefinedExamForm extends EntityWithUniqueId<PredefinedExamForm> {
   @ElementCollection
   private List<Schedule> schedules = new ArrayList<>();
 
-  private Duration duration;
+  private Scope scope;
 
   @JsonUnwrapped
   private ExamDescription description;
@@ -47,7 +47,7 @@ public class PredefinedExamForm extends EntityWithUniqueId<PredefinedExamForm> {
     for (Schedule schedule : schedules) {
       schedule.checkValid();
     }
-    duration.checkValid();
+    scope.checkValid();
     description.checkValid();
   }
 }

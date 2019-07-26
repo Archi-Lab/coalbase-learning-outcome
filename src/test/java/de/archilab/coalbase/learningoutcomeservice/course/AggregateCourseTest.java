@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.archilab.coalbase.learningoutcomeservice.examform.Duration;
+import de.archilab.coalbase.learningoutcomeservice.examform.Scope;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamDescription;
 import de.archilab.coalbase.learningoutcomeservice.examform.ExamType;
 import de.archilab.coalbase.learningoutcomeservice.examform.Schedule;
@@ -396,10 +396,10 @@ public class AggregateCourseTest {
     List<Schedule> schedules = new ArrayList<>();
     schedules.add(new Schedule("Am Anfang"));
 
-    Duration duration = new Duration(10, 15, "Min");
+    Scope scope = new Scope(10, 15, "Min");
 
     ExamDescription description = new ExamDescription("Ist einfach");
 
-    return new ExamForm(type, schedules, duration, description);
+    return new ExamForm(type, schedules, scope, description);
   }
 }
