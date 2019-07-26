@@ -4,4 +4,4 @@ services:
   springboot-service:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome-dev
     ports:
-      - "8080:8081"
+      - "8081:8080"
