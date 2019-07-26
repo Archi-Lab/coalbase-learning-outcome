@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+CURRENT=$(pwd)
 
 # start service
 docker-compose -p learning-outcome \
-  -f "./src/main/docker/docker-compose.yml" \
-  -f "./src/main/docker/docker-compose-dev.yml" \
+  -f "$CURRENT/src/main/docker/docker-compose.yml" \
+  -f "$CURRENT/src/main/docker/docker-compose-dev.yml" \
   down
