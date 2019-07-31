@@ -10,7 +10,7 @@ spring:
     bootstrap-servers: kafka:9092
 # Keycloak
 keycloak:
-  auth-server-url: http://keycloak:8080/auth/
+  auth-server-url: http://localhost:8090/auth/
 
 # CORS
 security:
