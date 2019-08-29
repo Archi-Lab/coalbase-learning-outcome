@@ -8,7 +8,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: de.archilab.coalbase.learningoutcomeservice.core.local.H2DialectCustom
+        dialect: io.archilab.coalbase.learningoutcomeservice.core.local.H2DialectCustom
   # Kafka
   kafka:
     bootstrap-servers: localhost:9090
