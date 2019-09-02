@@ -2,10 +2,10 @@ version: '3.4'
 
 services:
   postgres:
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
+    #    logging:
+    #      driver: gelf
+    #      options:
+    #        gelf-address: "udp://127.0.0.1:12201"
     deploy:
       restart_policy:
         condition: any
@@ -27,10 +27,10 @@ services:
         window: 120s
     networks:
       - coalbase_backend
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: "udp://127.0.0.1:12201"
 networks:
   coalbase_backend:
     external: true
