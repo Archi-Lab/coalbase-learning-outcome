@@ -54,16 +54,6 @@ node {
                     -Dmaven.test.skip=true clean deploy"
             }
         }
-
-        stage('Docker build Dev') {
-            sh "apk -U add docker"
-            sh "docker build -f ./Dockerfile-dev \
-                -t docker.nexus.archi-lab.io/archilab/${image}-dev ."
-
-            docker.withRegistry('https://docker.nexus.archi-lab.io', 'archilab-nexus-jenkins') {
-                sh "docker push docker.nexus.archi-lab.io/archilab/${image}-dev"
-            }
-        }
     }
 
     stage('Deploy') {
