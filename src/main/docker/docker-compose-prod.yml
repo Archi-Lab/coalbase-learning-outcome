@@ -1,17 +1,19 @@
 version: '3.4'
 
 services:
+
   postgres:
-       logging:
-         driver: gelf
-         options:
-           gelf-address: "udp://10.10.10.23:12201"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://10.10.10.23:12201"
     deploy:
       restart_policy:
         condition: any
         delay: 5s
         max_attempts: 3
         window: 120s
+
   springboot-service:
     image: docker.nexus.archi-lab.io/archilab/coalbase-learning-outcome:${BUILD_ID}
     deploy:
@@ -30,10 +32,11 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
     networks:
       - coalbase_backend
-   logging:
-     driver: gelf
-     options:
-       gelf-address: "udp://10.10.10.23:12201"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://10.10.10.23:12201"
+
 networks:
   coalbase_backend:
     external: true
