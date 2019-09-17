@@ -6,7 +6,7 @@ services:
     logging:
       driver: gelf
       options:
-        gelf-address: "udp://10.10.10.23:12201"
+        gelf-address: "udp://archilab-infra:12201"
     deploy:
       restart_policy:
         condition: any
@@ -35,7 +35,7 @@ services:
     logging:
       driver: gelf
       options:
-        gelf-address: "udp://10.10.10.23:12201"
+        gelf-address: "udp://archilab-infra:12201"
 
 networks:
   coalbase_backend:
